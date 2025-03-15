@@ -1,0 +1,23 @@
+subscription GetResume($id: String!) {
+    resume(id: $id) {
+        attributes {
+            name
+            value
+        }
+        name
+        employmentRecords {
+            employer
+            summary
+            title
+            yearsEmployed
+        }
+        universityRecord {
+            degreeType
+            label
+            major
+            minors
+            universityName
+        }
+        summary
+    }
+}
