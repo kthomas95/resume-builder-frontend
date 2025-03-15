@@ -24,8 +24,9 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                 <EditWorkExperience />
                 <div className="fixed inset-x-0 bottom-0 flex m-4">
                     <a
-                        href={`http://10.0.0.183:8080/build-resume/${id}`}
-                        target={"_blank"}
+                        href={`https://resume-api.kthomas.me/build-resume/${id}`}
+                        target={"_bl
+ank"}
                         className={buttonStyles({ class: "w-max ml-auto !p-4 !text-base" })}
                     >
                         Build Resume

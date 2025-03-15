@@ -2,11 +2,11 @@ import { Client, cacheExchange, fetchExchange, Provider, subscriptionExchange } 
 import { Component, FunctionComponent, PropsWithChildren } from "react";
 import { SubscribePayload, createClient as createWSClient } from "graphql-ws";
 const wsClient = createWSClient({
-    url: "http://10.0.0.183:8080/subscriptions",
+    url: "https://resume-api.kthomas.me/subscriptions",
 });
 
 const client = new Client({
-    url: "http://10.0.0.183:8080/graphql",
+    url: "https://resume-api.kthomas.me/graphql",
     exchanges: [
         cacheExchange,
         fetchExchange,
