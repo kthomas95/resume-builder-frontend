@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute, useEffect, useState } from "react";
+import { ChangeEvent, HTMLInputTypeAttribute, useEffect, useState } from "react";
 
 export interface TextFieldProps {
     className?: string;
@@ -10,6 +10,18 @@ export interface TextFieldProps {
     id?: string;
 }
 
+export const useTextFieldValue = (initialValue?: string) => {
+    const [value, setValue] = useState(initialValue ?? "");
+    useEffect(() => {
+        setValue(initialValue ?? value);
+    }, [initialValue]);
+
+    return {
+        onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(e.target.value),
+        value,
+    };
+};
+
 export const TextField = ({
     className,
     commitChange,
@@ -19,10 +31,7 @@ export const TextField = ({
     id,
     asTextArea,
 }: TextFieldProps) => {
-    const [value, setValue] = useState(initialValue);
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
+    const inputStateProps = useTextFieldValue(initialValue);
 
     const Component = asTextArea ? "textarea" : "input";
 
@@ -32,9 +41,8 @@ export const TextField = ({
             id={id}
             placeholder={placeholder}
             className={className}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onBlur={() => commitChange(value)}
+            onBlur={() => commitChange(inputStateProps.value)}
+            {...inputStateProps}
         />
     );
 };

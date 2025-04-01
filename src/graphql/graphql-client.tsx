@@ -1,29 +1,51 @@
-import { Client, cacheExchange, fetchExchange, Provider, subscriptionExchange } from "urql";
-import { Component, FunctionComponent, PropsWithChildren } from "react";
-import { SubscribePayload, createClient as createWSClient } from "graphql-ws";
-const wsClient = createWSClient({
-    url: "https://resume-api.kthomas.me/subscriptions",
-});
+import { cacheExchange, Client, fetchExchange, Provider, subscriptionExchange } from "urql";
+import { PropsWithChildren, useMemo } from "react";
+import { createClient as createWSClient, SubscribePayload } from "graphql-ws";
+import { useAtomValue } from "jotai/react";
+import { UserAtom } from "../atoms/UserAtom";
 
-const client = new Client({
-    url: "https://resume-api.kthomas.me/graphql",
-    exchanges: [
-        cacheExchange,
-        fetchExchange,
-        subscriptionExchange({
-            forwardSubscription: (request) => {
-                const input: SubscribePayload = {
-                    ...request,
-                    query: request.query || "",
-                };
-                return {
-                    subscribe: (sink) => ({
-                        unsubscribe: wsClient.subscribe(input, sink),
-                    }),
-                };
+const useClient = () => {
+    const user = useAtomValue(UserAtom);
+
+    return useMemo(() => {
+        const headers = user ? { Authorization: `Bearer ${user.token}` } : null;
+
+        const wsClient = createWSClient({
+            url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
+            // url: "http://localhost:8090/subscriptions",
+            connectionParams: {
+                headers,
             },
-        }),
-    ],
-});
+        });
 
-export const GraphQLProvider = ({ children }: PropsWithChildren) => <Provider value={client}>{children}</Provider>;
+        return new Client({
+            url: import.meta.env.VITE_GQL_URL ?? "https://resume-api.kthomas.me/graphql",
+            // url: "http://localhost:8090/graphql",
+            fetchOptions: {
+                headers: headers ?? undefined,
+            },
+            exchanges: [
+                cacheExchange,
+                fetchExchange,
+                subscriptionExchange({
+                    forwardSubscription: (request) => {
+                        const input: SubscribePayload = {
+                            ...request,
+                            query: request.query || "",
+                        };
+                        return {
+                            subscribe: (sink) => ({
+                                unsubscribe: wsClient.subscribe(input, sink),
+                            }),
+                        };
+                    },
+                }),
+            ],
+        });
+    }, [user?.token]);
+};
+
+export const GraphQLProvider = ({ children }: PropsWithChildren) => {
+    const client = useClient();
+    return <Provider value={client}>{children}</Provider>;
+};

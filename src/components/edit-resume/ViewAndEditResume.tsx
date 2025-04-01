@@ -6,15 +6,19 @@ import * as React from "react";
 import { EditSummary } from "./EditSummary";
 import { resumeContext, useGetResume } from "./resume-context";
 import { buttonStyles } from "../../styles/button";
+import { EditDescription } from "./EditDescription";
+import { useTitle } from "react-use";
 
 export const ViewAndEditResume = ({ id }: { id: string }) => {
     const resume = useGetResume(id);
 
-    if (!resume) return <div>Loading Resume Data</div>;
+    useTitle(resume?.description ?? "Loading Resume");
+    if (!resume) return <div>Loading Resume Data for {id}</div>;
 
     return (
         <resumeContext.Provider value={resume}>
-            <div className={"px-5 pt-5 pb-20 mx-auto flex flex-col gap-4"}>
+            <div className={"px-5 pb-32 mx-auto flex flex-col gap-4"}>
+                <EditDescription />
                 <EditName />
                 <EditAttributes />
                 <EditSummary />
@@ -22,11 +26,11 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                 <EditEducation />
                 <hr className={"opacity-30 my-3"} />
                 <EditWorkExperience />
-                <div className="fixed inset-x-0 bottom-0 flex m-4">
+                <div className="fixed right-18 bottom-9 flex">
                     <a
-                        href={`https://resume-api.kthomas.me/build-resume/${id}`}
+                        href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
                         target={"_blank"}
-                        className={buttonStyles({ class: "w-max ml-auto !p-4 !text-base" })}
+                        className={buttonStyles({ class: "w-max ml-auto !p-4 !text-base !rounded-full" })}
                     >
                         Build Resume
                     </a>

@@ -1,0 +1,3 @@
+mutation DeleteResume($resumeId: UUID!) {
+    deleteResume(resumeId: $resumeId)
+}
