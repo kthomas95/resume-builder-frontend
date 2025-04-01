@@ -7,7 +7,7 @@ export const EditDescription = () => {
     return (
         <input
             type={"text"}
-            className={"text-right italic w-min ml-auto"}
+            className={"text-right italic w-full ml-auto px-4 focus:outline-none"}
             value={localDescription}
             onChange={(e) => setLocalDescription(e.target.value)}
             onBlur={() => updateResume({ description: localDescription })}

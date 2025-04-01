@@ -18,7 +18,7 @@ export const textFieldStyles = {
             style: "default",
         },
     }),
-    inputWithIcon: cva({ base: "px-3 py-1 focus:outline-none pl-8 text-slate-800 text-sm" }),
+    inputWithIcon: cva({ base: "px-3 py-1 focus:outline-none pl-8 text-slate-800 text-sm grow w-full" }),
     label: cva({ base: "font-semibold all-small-caps text-sm text-slate-800" }),
     fieldset: cva({ base: "flex items-center gap-5" }),
     icon: cva({ base: "size-4 absolute inset-y-0 my-auto left-2 select-none text-slate-600" }),

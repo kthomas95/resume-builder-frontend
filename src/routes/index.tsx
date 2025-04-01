@@ -4,6 +4,7 @@ import { YourAvailableResumes } from "../components/resume/AvailableResumes";
 import { CreateNewResume } from "../components/resume/CreateNewResume";
 import { useAtomValue } from "jotai/react";
 import { UserAtom } from "../atoms/UserAtom";
+import { useTitle } from "react-use";
 
 export const Route = createFileRoute("/")({
     component: HomeComponent,
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/")({
 
 function HomeComponent() {
     const user = useAtomValue(UserAtom);
+    useTitle("Your Resumes");
     return (
         <div className="p-3 md:p-4 container mx-auto flex flex-col gap-4">
             {user && <h3 className={"font-bold text-lg mb-2"}>Your Resumes</h3>}
