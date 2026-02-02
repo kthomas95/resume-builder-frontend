@@ -4,7 +4,6 @@ import { textFieldStyles } from "../../styles/textfield";
 import { useAtom } from "jotai/react";
 import { UserAtom } from "../../atoms/UserAtom";
 import { Dialog, VisuallyHidden } from "radix-ui";
-import { buttonStyles } from "../../styles/button";
 import { LoginMutation, useLoginMutation } from "../../__generated__/graphql";
 
 const useLogin = () => {
@@ -89,7 +88,7 @@ export const LoginForm = () => {
                     </fieldset>
                 )}
             />
-            <button type={"submit"} className={buttonStyles()}>
+            <button type={"submit"} className={"btn btn-primary"}>
                 Login
             </button>
             <div>{response?.__typename}</div>

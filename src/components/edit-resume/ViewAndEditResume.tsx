@@ -1,7 +1,7 @@
 import { EditName } from "./EditName";
 import { EditAttributes } from "./EditAttributes";
-import { EditEducation } from "./EditEducation";
-import { EditWorkExperience } from "./EditWorkExperience";
+import { EditEducation } from "../education/EditEducation";
+import { EditWorkExperience } from "../employment/EditWorkExperience";
 import * as React from "react";
 import { EditSummary } from "./EditSummary";
 import { resumeContext, useGetResume } from "./resume-context";
@@ -23,14 +23,20 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                 <EditAttributes />
                 <EditSummary />
                 <hr className={"opacity-30 my-3"} />
-                <EditEducation />
-                <hr className={"opacity-30 my-3"} />
-                <EditWorkExperience />
+                {resume.sections.map((section) => {
+                    if (section.__typename === "EducationRecords") {
+                        return <EditEducation {...section} />;
+                    }
+                    if (section.__typename === "EmploymentRecords") {
+                        return <EditWorkExperience {...section} />;
+                    }
+                    return null;
+                })}
                 <div className="fixed right-18 bottom-9 flex">
                     <a
                         href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
                         target={"_blank"}
-                        className={buttonStyles({ class: "w-max ml-auto !p-4 !text-base !rounded-full" })}
+                        className={"btn btn-primary text-lg p-3 !rounded-full"}
                     >
                         Build Resume
                     </a>

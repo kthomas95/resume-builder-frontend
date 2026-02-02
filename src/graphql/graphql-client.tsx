@@ -11,16 +11,16 @@ const useClient = () => {
         const headers = user ? { Authorization: `Bearer ${user.token}` } : null;
 
         const wsClient = createWSClient({
-            url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
-            // url: "http://localhost:8090/subscriptions",
+            // url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
+            url: "http://localhost:8090/subscriptions",
             connectionParams: {
                 headers,
             },
         });
 
         return new Client({
-            url: import.meta.env.VITE_GQL_URL ?? "https://resume-api.kthomas.me/graphql",
-            // url: "http://localhost:8090/graphql",
+            // url: import.meta.env.VITE_GQL_URL ?? "https://resume-api.kthomas.me/graphql",
+            url: "http://localhost:8090/graphql",
             fetchOptions: {
                 headers: headers ?? undefined,
             },

@@ -1,0 +1,45 @@
+fragment EducationProps on UniversityRecord {
+    degreeType
+    label
+    major
+    minors
+    universityName
+}
+
+
+fragment EducationSection on EducationRecords {
+    title
+    records {
+        ...EducationProps
+    }
+}
+
+fragment EducationComponent on EducationComponent {
+    record {
+        ...EducationProps
+    }
+    id
+    description
+}
+
+subscription GetEducationComponents {
+    getEducationRecords {
+        ...EducationComponent
+    }
+}
+
+mutation NewEducationComponent($description: String!) {
+    newEducationRecord(description: $description)
+}
+
+mutation UpdateEducationComponent($id: UUID!, $record: UpdateUniversityRecordInput!) {
+    updateEducationRecord(id: $id, record: $record)
+}
+
+mutation DeleteEducationRecord($id: UUID!) {
+    deleteEducationRecord(id: $id)
+}
+
+mutation InsertEducationComponentIntoResume($resumeId: UUID!, $componentId: UUID!) {
+    insertEducationRecordIntoResume(resumeId: $resumeId, employmentId: $componentId)
+}

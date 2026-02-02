@@ -25,7 +25,7 @@ const AvailableResumeComponent = ({ description, resumeId, lastModified }: Avail
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align={"end"} className={"m-3 bg-slate-100 shadow-md rounded-md"}>
                     <DropdownMenu.DropdownMenuItem asChild>
-                        <button onClick={() => deleteResume({ resumeId })} className={buttonStyles()}>
+                        <button onClick={() => deleteResume({ resumeId })} className={"btn btn-primary"}>
                             Delete {resumeName}
                         </button>
                     </DropdownMenu.DropdownMenuItem>

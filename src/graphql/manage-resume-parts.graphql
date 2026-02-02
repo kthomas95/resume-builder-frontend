@@ -1,0 +1,25 @@
+mutation NewSummary($description: String!) {
+    newSummary(description: $description)
+}
+
+mutation UpdateSummary($description: String, $id: UUID!, $summaryText: String) {
+    updateSummary(description: $description, id: $id, summaryText: $summaryText)
+}
+
+mutation DeleteSummary($id: UUID!) {
+    deleteSummary(id: $id)
+}
+
+subscription GetSummaries {
+    getSummaries {
+        summaryText
+        description
+        id
+    }
+}
+
+mutation ImportSummary($resumeId: UUID!, $summaryId: UUID!) {
+    importSummary(resumeId: $resumeId, summaryId: $summaryId)
+}
+
+

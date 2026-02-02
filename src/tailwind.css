@@ -10,3 +10,29 @@ body {
         font-variant: all-small-caps;
     }
 }
+
+@layer components {
+    .dialog-content {
+        @apply fixed m-auto w-max h-max inset-0 container;
+    }
+
+    .btn {
+        @apply flex items-center py-1 px-2 justify-center shadow-md font-bold focus:ring-4 focus:outline-none text-sm rounded-md;
+    }
+
+    .btn-primary {
+        @apply bg-sky-500 hover:bg-sky-600 text-white ring-sky-200;
+    }
+
+    .btn-error {
+        @apply bg-rose-600 hover:bg-rose-700 ring-rose-200 text-white;
+    }
+
+    .btn-outline {
+        @apply border border-slate-400 hover:bg-slate-300/20 ring-slate-200;
+    }
+
+    .btn-success {
+        @apply bg-emerald-600 hover:bg-emerald-700 ring-emerald-500/30 text-white;
+    }
+}

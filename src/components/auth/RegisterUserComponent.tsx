@@ -48,7 +48,7 @@ export const RegisterUserComponent = () => {
                         />
                     )}
                 />
-                <button onClick={form.handleSubmit} className={buttonStyles()}>
+                <button onClick={form.handleSubmit} className={"btn btn-primary"}>
                     Register User
                 </button>
                 {registeredUser && (

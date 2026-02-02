@@ -1,26 +1,52 @@
+
+fragment EmploymentSection on EmploymentRecords {
+    title
+    records {
+        ...EmploymentProps
+    }
+}
+
+fragment CustomSectionRecord on CustomSectionRecord {
+    name
+    description
+    label
+    rightLabel
+}
+
+fragment CustomSection on CustomSection {
+    records {
+        ...CustomSectionRecord
+    }
+    title
+}
+
+fragment ResumeProps on ResumeData {
+        attributes {
+            name
+            value
+        }
+        name
+        summary
+        sections {
+            __typename
+            ... on EducationRecords {
+                ...EducationSection
+            }
+
+            ... on EmploymentRecords {
+                ...EmploymentSection
+            }
+
+            ... on CustomSection {
+                ...CustomSection
+            }
+        }
+}
 subscription GetResume($id: String!) {
     resume(id: $id) {
         description
         currentResume {
-            attributes {
-                name
-                value
-            }
-            name
-            employmentRecords {
-                employer
-                summary
-                title
-                yearsEmployed
-            }
-            universityRecord {
-                degreeType
-                label
-                major
-                minors
-                universityName
-            }
-            summary
+            ...ResumeProps
         }
     }
 }
