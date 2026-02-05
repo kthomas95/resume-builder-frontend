@@ -1,22 +1,21 @@
-import { useContext, useState } from "react";
-import { useManageResumeInfoMutation } from "../../__generated__/manage-resume-info.generated";
+import { useContext } from "react";
 import { resumeContext } from "./resume-context";
 import { TextField } from "../common/TextField";
-
-export interface EditNameProps {
-    name: string;
-    id: string;
-}
+import { Box, Center } from "@mantine/core";
 
 export const EditName = () => {
     const { updateResume, name } = useContext(resumeContext);
 
     return (
-        <TextField
-            className={"text-3xl font-bold text-center italic my-6 focus:outline-none"}
-            commitChange={(value) => updateResume({ name: value })}
-            placeholder={"Your Name"}
-            initialValue={name}
-        />
+        <Center my="xl">
+            <Box maw={500} w="100%">
+                <TextField
+                    placeholder="Your Full Name"
+                    initialValue={name}
+                    commitChange={(value) => updateResume({ name: value })}
+                    id="resume-name"
+                />
+            </Box>
+        </Center>
     );
 };

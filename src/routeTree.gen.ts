@@ -11,48 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as SummariesImport } from './routes/summaries'
-import { Route as LoggedinImport } from './routes/loggedin'
-import { Route as EmploymentImport } from './routes/employment'
-import { Route as EducationImport } from './routes/education'
+import { Route as AuthcallbackImport } from './routes/authcallback'
 import { Route as IndexImport } from './routes/index'
-import { Route as ResumeIdEditImport } from './routes/$resumeId.edit'
 
 // Create/Update Routes
 
-const SummariesRoute = SummariesImport.update({
-  id: '/summaries',
-  path: '/summaries',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LoggedinRoute = LoggedinImport.update({
-  id: '/loggedin',
-  path: '/loggedin',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const EmploymentRoute = EmploymentImport.update({
-  id: '/employment',
-  path: '/employment',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const EducationRoute = EducationImport.update({
-  id: '/education',
-  path: '/education',
+const AuthcallbackRoute = AuthcallbackImport.update({
+  id: '/authcallback',
+  path: '/authcallback',
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ResumeIdEditRoute = ResumeIdEditImport.update({
-  id: '/$resumeId/edit',
-  path: '/$resumeId/edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -67,39 +39,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/education': {
-      id: '/education'
-      path: '/education'
-      fullPath: '/education'
-      preLoaderRoute: typeof EducationImport
-      parentRoute: typeof rootRoute
-    }
-    '/employment': {
-      id: '/employment'
-      path: '/employment'
-      fullPath: '/employment'
-      preLoaderRoute: typeof EmploymentImport
-      parentRoute: typeof rootRoute
-    }
-    '/loggedin': {
-      id: '/loggedin'
-      path: '/loggedin'
-      fullPath: '/loggedin'
-      preLoaderRoute: typeof LoggedinImport
-      parentRoute: typeof rootRoute
-    }
-    '/summaries': {
-      id: '/summaries'
-      path: '/summaries'
-      fullPath: '/summaries'
-      preLoaderRoute: typeof SummariesImport
-      parentRoute: typeof rootRoute
-    }
-    '/$resumeId/edit': {
-      id: '/$resumeId/edit'
-      path: '/$resumeId/edit'
-      fullPath: '/$resumeId/edit'
-      preLoaderRoute: typeof ResumeIdEditImport
+    '/authcallback': {
+      id: '/authcallback'
+      path: '/authcallback'
+      fullPath: '/authcallback'
+      preLoaderRoute: typeof AuthcallbackImport
       parentRoute: typeof rootRoute
     }
   }
@@ -109,76 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/education': typeof EducationRoute
-  '/employment': typeof EmploymentRoute
-  '/loggedin': typeof LoggedinRoute
-  '/summaries': typeof SummariesRoute
-  '/$resumeId/edit': typeof ResumeIdEditRoute
+  '/authcallback': typeof AuthcallbackRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/education': typeof EducationRoute
-  '/employment': typeof EmploymentRoute
-  '/loggedin': typeof LoggedinRoute
-  '/summaries': typeof SummariesRoute
-  '/$resumeId/edit': typeof ResumeIdEditRoute
+  '/authcallback': typeof AuthcallbackRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/education': typeof EducationRoute
-  '/employment': typeof EmploymentRoute
-  '/loggedin': typeof LoggedinRoute
-  '/summaries': typeof SummariesRoute
-  '/$resumeId/edit': typeof ResumeIdEditRoute
+  '/authcallback': typeof AuthcallbackRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/education'
-    | '/employment'
-    | '/loggedin'
-    | '/summaries'
-    | '/$resumeId/edit'
+  fullPaths: '/' | '/authcallback'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/education'
-    | '/employment'
-    | '/loggedin'
-    | '/summaries'
-    | '/$resumeId/edit'
-  id:
-    | '__root__'
-    | '/'
-    | '/education'
-    | '/employment'
-    | '/loggedin'
-    | '/summaries'
-    | '/$resumeId/edit'
+  to: '/' | '/authcallback'
+  id: '__root__' | '/' | '/authcallback'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EducationRoute: typeof EducationRoute
-  EmploymentRoute: typeof EmploymentRoute
-  LoggedinRoute: typeof LoggedinRoute
-  SummariesRoute: typeof SummariesRoute
-  ResumeIdEditRoute: typeof ResumeIdEditRoute
+  AuthcallbackRoute: typeof AuthcallbackRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EducationRoute: EducationRoute,
-  EmploymentRoute: EmploymentRoute,
-  LoggedinRoute: LoggedinRoute,
-  SummariesRoute: SummariesRoute,
-  ResumeIdEditRoute: ResumeIdEditRoute,
+  AuthcallbackRoute: AuthcallbackRoute,
 }
 
 export const routeTree = rootRoute
@@ -192,30 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/education",
-        "/employment",
-        "/loggedin",
-        "/summaries",
-        "/$resumeId/edit"
+        "/authcallback"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/education": {
-      "filePath": "education.tsx"
-    },
-    "/employment": {
-      "filePath": "employment.tsx"
-    },
-    "/loggedin": {
-      "filePath": "loggedin.tsx"
-    },
-    "/summaries": {
-      "filePath": "summaries.tsx"
-    },
-    "/$resumeId/edit": {
-      "filePath": "$resumeId.edit.tsx"
+    "/authcallback": {
+      "filePath": "authcallback.tsx"
     }
   }
 }

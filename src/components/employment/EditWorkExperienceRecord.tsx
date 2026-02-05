@@ -1,8 +1,7 @@
 import { EmploymentPropsFragment, UpdateEmploymentRecordInput } from "../../__generated__/graphql";
-import { useState } from "react";
-import { textFieldStyles } from "../../styles/textfield";
 import { TextField } from "../common/TextField";
 import { AreYouSureButton } from "../edit-resume/AreYouSureButton";
+import { Stack, Group, Card, Text, Divider, Box } from "@mantine/core";
 
 interface EditWorkExperienceProps extends EmploymentPropsFragment {
     update: (props: Omit<UpdateEmploymentRecordInput, "index">) => void;
@@ -18,58 +17,52 @@ export const EditWorkExperienceRecord = ({
     remove,
 }: EditWorkExperienceProps) => {
     return (
-        <div className={"flex flex-col gap-3 p-5"}>
-            <fieldset className={textFieldStyles.fieldset({ class: "flex-wrap" })}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>Employer</label>
-                <TextField
-                    className={textFieldStyles.input({ style: "ghost", class: "grow" })}
-                    placeholder={"Employer"}
-                    commitChange={(value) =>
-                        update({
-                            newEmployer: value,
-                        })
-                    }
-                    initialValue={employer}
-                />
-            </fieldset>
-            <fieldset className={textFieldStyles.fieldset()}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>Title</label>
-                <TextField
-                    className={textFieldStyles.input({ style: "ghost", class: "grow" })}
-                    placeholder={"Title"}
-                    commitChange={(value) =>
-                        update({
-                            newTitle: value,
-                        })
-                    }
-                    initialValue={title}
-                />
-            </fieldset>
-            <fieldset className={textFieldStyles.fieldset()}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>Years Employed</label>
-                <TextField
-                    className={textFieldStyles.input({ style: "ghost", class: "grow" })}
-                    placeholder={"Years Employed"}
-                    commitChange={(value) =>
-                        update({
-                            newYearsWorked: value,
-                        })
-                    }
-                    initialValue={yearsEmployed}
-                />
-            </fieldset>
-            <TextField
-                commitChange={(value) =>
-                    update({
-                        newSummary: value,
-                    })
-                }
-                placeholder={"Enter your employment summary here.\n- Use dashes to render bullet points."}
-                asTextArea={true}
-                className={textFieldStyles.input({ style: "default", class: "h-32" })}
-                initialValue={summary}
-            />
-            <AreYouSureButton finalizeDelete={remove} label={`Remove ${employer}`} />
-        </div>
+        <Card shadow="xs" padding="lg" radius="md" withBorder>
+            <Stack gap="md">
+                <Group grow preventGrowOverflow={false}>
+                    <Box style={{ flex: 1 }}>
+                        <Text size="xs" fw={700} c="dimmed" mb={4}>EMPLOYER</Text>
+                        <TextField
+                            placeholder="Employer"
+                            commitChange={(value) => update({ newEmployer: value })}
+                            initialValue={employer}
+                        />
+                    </Box>
+                    <Box style={{ flex: 1 }}>
+                        <Text size="xs" fw={700} c="dimmed" mb={4}>TITLE</Text>
+                        <TextField
+                            placeholder="Title"
+                            commitChange={(value) => update({ newTitle: value })}
+                            initialValue={title}
+                        />
+                    </Box>
+                </Group>
+
+                <Box>
+                    <Text size="xs" fw={700} c="dimmed" mb={4}>YEARS EMPLOYED</Text>
+                    <TextField
+                        placeholder="Years Employed"
+                        commitChange={(value) => update({ newYearsWorked: value })}
+                        initialValue={yearsEmployed}
+                    />
+                </Box>
+
+                <Box>
+                    <Text size="xs" fw={700} c="dimmed" mb={4}>SUMMARY</Text>
+                    <TextField
+                        commitChange={(value) => update({ newSummary: value })}
+                        placeholder="Enter your employment summary here. Use dashes for bullet points."
+                        asTextArea={true}
+                        initialValue={summary}
+                    />
+                </Box>
+
+                <Divider my="sm" />
+
+                <Group justify="flex-end">
+                    <AreYouSureButton finalizeDelete={remove} label={`Remove ${employer || "Experience"}`} />
+                </Group>
+            </Stack>
+        </Card>
     );
 };

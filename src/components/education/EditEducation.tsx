@@ -1,9 +1,6 @@
 import { useContext } from "react";
 import { resumeContext } from "../edit-resume/resume-context";
-import { TextField } from "../common/TextField";
-import { textFieldStyles } from "../../styles/textfield";
-import { AcademicCapIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { Dialog, DropdownMenu } from "radix-ui";
+import { GraduationCap, Plus, Save, Trash2, X } from "lucide-react";
 import {
     EducationPropsFragment,
     EducationSectionFragment,
@@ -13,37 +10,63 @@ import {
     useInsertEducationComponentIntoResumeMutation,
 } from "../../__generated__/graphql";
 import { AreYouSureButton } from "../edit-resume/AreYouSureButton";
+import { 
+    Button, 
+    Menu, 
+    ActionIcon, 
+    Title, 
+    Group, 
+    Stack, 
+    Text, 
+    Card, 
+    TextInput, 
+    Modal, 
+    Divider,
+    UnstyledButton,
+    rem
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 const AddUniversityRecord = () => {
     const { updateResume, id } = useContext(resumeContext);
     const [{ data }] = useGetEducationComponentsSubscription();
-    const [addResponse, add] = useInsertEducationComponentIntoResumeMutation();
+    const [, add] = useInsertEducationComponentIntoResumeMutation();
     const universityComponents = data?.getEducationRecords ?? [];
 
     return (
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger className={"btn btn-primary ml-auto"}>
-                <PlusIcon className={"size-5"} />
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content className={"p-3 bg-white rounded-md shadow-md flex flex-col gap-3"}>
-                <button
+        <Menu shadow="md" width={250} position="bottom-end">
+            <Menu.Target>
+                <ActionIcon variant="filled" color="blue" size="lg" radius="md">
+                    <Plus size={20} />
+                </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+                <Menu.Label>Actions</Menu.Label>
+                <Menu.Item
+                    leftSection={<Plus size={14} />}
                     onClick={() => updateResume({ updateSections: { addUniversityRecord: true } })}
-                    className={"btn btn-success"}
                 >
                     New Blank Record
-                </button>
-                {universityComponents.map((record, index) => (
-                    <button
-                        className={"btn btn-primary"}
-                        onClick={() => {
-                            add({ resumeId: id, componentId: record.id });
-                        }}
-                    >
-                        {record.record.universityName}
-                    </button>
-                ))}
-            </DropdownMenu.Content>
-        </DropdownMenu.Root>
+                </Menu.Item>
+                
+                {universityComponents.length > 0 && (
+                    <>
+                        <Menu.Divider />
+                        <Menu.Label>Import from Library</Menu.Label>
+                        {universityComponents.map((record) => (
+                            <Menu.Item
+                                key={record.id}
+                                onClick={() => {
+                                    add({ resumeId: id, componentId: record.id });
+                                }}
+                            >
+                                {record.record.universityName}
+                            </Menu.Item>
+                        ))}
+                    </>
+                )}
+            </Menu.Dropdown>
+        </Menu>
     );
 };
 
@@ -62,127 +85,151 @@ export const EditEducationRecord = ({
     deleteRecord,
 }: EditEducationProps) => {
     return (
-        <div className="flex flex-col gap-3 p-4 relative shadow-md rounded-md">
-            <fieldset className={textFieldStyles.fieldset({ class: "flex-wrap" })}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>University</label>
-
-                <TextField
-                    className={textFieldStyles.input({ style: "ghost", class: "grow" })}
-                    initialValue={universityName}
-                    commitChange={(value) => updateRecord({ newUniversityName: value })}
-                    placeholder={"University"}
-                />
-            </fieldset>
-            <fieldset className={textFieldStyles.fieldset()}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>Years Attended</label>
-                <TextField
-                    commitChange={(value) =>
-                        updateRecord({
-                            newLabel: value,
-                        })
-                    }
-                    className={textFieldStyles.input({ style: "ghost", class: "grow" })}
-                    initialValue={label}
-                    placeholder={"Label"}
-                />
-            </fieldset>
-            <fieldset className={textFieldStyles.fieldset()}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>Degree Type</label>
-                <TextField
-                    className={textFieldStyles.input({ style: "ghost", class: "grow" })}
-                    commitChange={(value) => updateRecord({ newDegreeType: value })}
-                    initialValue={degreeType}
-                    placeholder={"Degree Type"}
-                />
-            </fieldset>
-            <fieldset className={textFieldStyles.fieldset()}>
-                <label className={textFieldStyles.label({ class: "w-28 text-center" })}>Major</label>
-                <TextField
-                    className={textFieldStyles.input({
-                        style: "ghost",
-                        class: "grow",
-                    })}
-                    commitChange={(value) =>
-                        updateRecord({
-                            newMajor: value,
-                        })
-                    }
-                    initialValue={major}
-                    placeholder={"Major"}
-                />
-            </fieldset>
-            <div className={"flex flex-col gap-3"}>
-                <div className="flex items-center">
-                    <div className={textFieldStyles.label({ class: "w-28 text-center" })}>Minors</div>
-                    <button
-                        onClick={() =>
-                            updateRecord({
-                                newMinors: [...minors, ""],
-                            })
-                        }
-                        className={"ml-auto gap-3 btn btn-primary"}
-                    >
-                        <PlusIcon className={"size-5"} />
-                        Add Minor
-                    </button>
-                </div>
+        <Stack gap="md">
+            <TextInput
+                label="University"
+                placeholder="e.g. Stanford University"
+                value={universityName}
+                onChange={(e) => updateRecord({ newUniversityName: e.currentTarget.value })}
+            />
+            <TextInput
+                label="Years Attended"
+                placeholder="e.g. 2016 - 2020"
+                value={label}
+                onChange={(e) => updateRecord({ newLabel: e.currentTarget.value })}
+            />
+            <TextInput
+                label="Degree Type"
+                placeholder="e.g. Bachelor of Science"
+                value={degreeType}
+                onChange={(e) => updateRecord({ newDegreeType: e.currentTarget.value })}
+            />
+            <TextInput
+                label="Major"
+                placeholder="e.g. Computer Science"
+                value={major}
+                onChange={(e) => updateRecord({ newMajor: e.currentTarget.value })}
+            />
+            
+            <Divider label="Minors" labelPosition="left" />
+            
+            <Stack gap="xs">
                 {minors.map((minor, minorIndex) => (
-                    <div key={minorIndex} className="flex gap-6">
-                        <TextField
-                            placeholder={"Minor"}
-                            className={textFieldStyles.input({ style: "ghost" })}
-                            commitChange={(value) =>
-                                updateRecord({
-                                    newMinors: minors.map((newMinor, newMinorIndex) =>
-                                        minorIndex === newMinorIndex ? value : newMinor,
-                                    ),
-                                })
-                            }
-                            initialValue={minor}
+                    <Group key={minorIndex} grow preventGrowOverflow={false}>
+                        <TextInput
+                            placeholder="Minor"
+                            value={minor}
+                            onChange={(e) => updateRecord({
+                                newMinors: minors.map((m, i) => i === minorIndex ? e.currentTarget.value : m)
+                            })}
+                            style={{ flex: 1 }}
                         />
-                        <AreYouSureButton
-                            finalizeDelete={() =>
-                                updateRecord({
-                                    newMinors: minors.filter((_, i) => i !== minorIndex),
-                                })
-                            }
-                        />
-                    </div>
+                        <ActionIcon 
+                            color="red" 
+                            variant="subtle"
+                            onClick={() => updateRecord({
+                                newMinors: minors.filter((_, i) => i !== minorIndex)
+                            })}
+                        >
+                            <X size={16} />
+                        </ActionIcon>
+                    </Group>
                 ))}
-            </div>
-            <AreYouSureButton label={`Remove ${universityName}`} finalizeDelete={deleteRecord} />
-        </div>
+                <Button 
+                    variant="light" 
+                    size="xs" 
+                    leftSection={<Plus size={14} />}
+                    onClick={() => updateRecord({ newMinors: [...minors, ""] })}
+                    maw={150}
+                >
+                    Add Minor
+                </Button>
+            </Stack>
+            
+            <Divider mt="md" />
+            
+            <Group justify="space-between">
+                <Button 
+                    variant="light" 
+                    color="red" 
+                    leftSection={<Trash2 size={16} />}
+                    onClick={() => {
+                        if (window.confirm("Delete this education record?")) deleteRecord();
+                    }}
+                >
+                    Remove
+                </Button>
+            </Group>
+        </Stack>
     );
 };
 
 export const EditEducation = ({ title, records }: EducationSectionFragment) => {
     const { updateResume } = useContext(resumeContext);
     const updateSections = (request: UpdateSectionsInput) => updateResume({ updateSections: request });
+    
     return (
-        <div className={"flex flex-col gap-3 container mx-auto md:p-3"}>
-            <div className={"flex items-center gap-3"}>
-                <AcademicCapIcon className={"size-8"} />
-                <h3 className={"font-extrabold text-xl all-small-caps"}>{title}</h3>
+        <Stack gap="lg" maw={1000} mx="auto" w="100%">
+            <Group justify="space-between" align="center" style={{ fontVariant: 'all-small-caps' }}>
+                <Group gap="md">
+                    <GraduationCap size={28} />
+                    <Title order={3}>{title}</Title>
+                </Group>
                 <AddUniversityRecord />
-            </div>
+            </Group>
 
-            {records.map((props, index) => (
-                <Dialog.Root>
-                    <Dialog.Trigger className={""}>{props.universityName}</Dialog.Trigger>
-                    <Dialog.Content className={"dialog-content bg-white rounded-lg shadow-md"}>
-                        <EditEducationRecord
-                            {...props}
-                            updateRecord={(props) => {
-                                updateSections({ updateEducationRecord: { ...props, index } });
-                            }}
-                            deleteRecord={() => {
-                                updateSections({ deleteUniversityRecord: index });
-                            }}
-                            key={index}
-                        />
-                    </Dialog.Content>
-                </Dialog.Root>
-            ))}
-        </div>
+            <Stack gap="md">
+                {records.map((props, index) => (
+                    <EducationRecordModal 
+                        key={index}
+                        props={props}
+                        index={index}
+                        updateSections={updateSections}
+                    />
+                ))}
+            </Stack>
+        </Stack>
     );
 };
+
+const EducationRecordModal = ({ props, index, updateSections }: { props: EducationPropsFragment, index: number, updateSections: (r: UpdateSectionsInput) => void }) => {
+    const [opened, { open, close }] = useDisclosure(false);
+    
+    return (
+        <>
+            <UnstyledButton onClick={open}>
+                <Card shadow="xs" padding="md" radius="md" withBorder hoverable>
+                    <Group justify="space-between">
+                        <Stack gap={0}>
+                            <Text fw={700}>{props.universityName}</Text>
+                            <Text size="sm" c="dimmed">{props.degreeType} in {props.major}</Text>
+                        </Stack>
+                        <Text size="xs" c="dimmed">{props.label}</Text>
+                    </Group>
+                </Card>
+            </UnstyledButton>
+
+            <Modal 
+                opened={opened} 
+                onClose={close} 
+                title="Edit Education Record" 
+                size="lg"
+                centered
+            >
+                <EditEducationRecord
+                    {...props}
+                    updateRecord={(updateProps) => {
+                        updateSections({ updateEducationRecord: { ...updateProps, index } });
+                    }}
+                    deleteRecord={() => {
+                        updateSections({ deleteUniversityRecord: index });
+                        close();
+                    }}
+                />
+                <Group justify="flex-end" mt="xl">
+                    <Button onClick={close} leftSection={<Save size={16} />}>Save Changes</Button>
+                </Group>
+            </Modal>
+        </>
+    );
+}

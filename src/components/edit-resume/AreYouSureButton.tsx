@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { buttonStyles } from "../../styles/button";
+import { Button, Group } from "@mantine/core";
+import { Trash2, X, Check } from "lucide-react";
 
 export const AreYouSureButton = ({ finalizeDelete, label }: { finalizeDelete: () => void; label?: string }) => {
     const [areYouSureDelete, setAreYouSureDelete] = useState<boolean>(false);
-    const handleDelete = () => {};
+    
     return (
-        <div className={"flex gap-2 justify-end"}>
-            <button
-                className={"btn btn-error"}
+        <Group gap="xs">
+            <Button
+                color="red"
+                variant={areYouSureDelete ? "filled" : "light"}
+                leftSection={areYouSureDelete ? <Check size={16} /> : <Trash2 size={16} />}
                 onClick={() => {
                     if (!areYouSureDelete) {
                         setAreYouSureDelete(true);
@@ -17,12 +20,17 @@ export const AreYouSureButton = ({ finalizeDelete, label }: { finalizeDelete: ()
                 }}
             >
                 {areYouSureDelete ? "Confirm Deletion" : (label ?? "Remove")}
-            </button>
+            </Button>
+            
             {areYouSureDelete && (
-                <button onClick={() => setAreYouSureDelete(false)} className={"btn btn-outline"}>
-                    Don't Delete
-                </button>
+                <Button 
+                    variant="default" 
+                    leftSection={<X size={16} />}
+                    onClick={() => setAreYouSureDelete(false)}
+                >
+                    Cancel
+                </Button>
             )}
-        </div>
+        </Group>
     );
 };

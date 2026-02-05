@@ -1,7 +1,7 @@
-query GetAvailableResumes {
-    getAvailableResumes {
-        description
-        lastModified
-        resumeId
-    }
-}
+#query GetAvailableResumes {
+#    getAvailableResumes {
+#        description
+#        lastModified
+#        resumeId
+#    }
+#}

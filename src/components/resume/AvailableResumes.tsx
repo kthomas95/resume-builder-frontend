@@ -1,49 +1,123 @@
 import { Link } from "@tanstack/react-router";
 import { format, fromUnixTime } from "date-fns";
 import * as React from "react";
-import { DropdownMenu } from "radix-ui";
-import { description } from "valibot";
-import { buttonStyles } from "../../styles/button";
-import { ArrowDownIcon } from "@heroicons/react/24/outline";
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { 
+    Card, 
+    Button, 
+    Menu, 
+    ActionIcon,
+    Text,
+    Group,
+    Stack,
+    Box,
+    rem
+} from "@mantine/core";
+import { MoreVertical, Edit, Trash2, Download, Clock, ExternalLink } from "lucide-react";
 import { AvailableResume, useDeleteResumeMutation, useGetAvailableResumesQuery } from "../../__generated__/graphql";
+import * as R from "remeda";
 
 const AvailableResumeComponent = ({ description, resumeId, lastModified }: AvailableResume) => {
-    const [deleteResponse, deleteResume] = useDeleteResumeMutation();
+    const [, deleteResume] = useDeleteResumeMutation();
     const resumeName = description !== "" ? description : "Untitled Resume";
+    
     return (
-        <div key={resumeId} className={"flex gap-5 items-center"}>
-            <Link to={"/$resumeId/edit"} params={{ resumeId }} className={"flex gap-5 items-baseline mr-auto"}>
-                <div>{resumeName}</div>
-                <div className={"text-sm italic"}>
-                    Last Modified: {format(fromUnixTime(lastModified), "yyyy-MM-dd p")}
-                </div>
-            </Link>
-            <DropdownMenu.Root>
-                <DropdownMenu.Trigger className={"px-4 text-right focus:outline-none"}>
-                    <ChevronDownIcon className={"size-5"} />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align={"end"} className={"m-3 bg-slate-100 shadow-md rounded-md"}>
-                    <DropdownMenu.DropdownMenuItem asChild>
-                        <button onClick={() => deleteResume({ resumeId })} className={"btn btn-primary"}>
-                            Delete {resumeName}
-                        </button>
-                    </DropdownMenu.DropdownMenuItem>
-                </DropdownMenu.Content>
-            </DropdownMenu.Root>
-        </div>
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <Group justify="space-between" align="center">
+                <Stack gap={4}>
+                    <Text size="lg" fw={700}>{resumeName}</Text>
+                    <Group gap="xs" c="dimmed">
+                        <Clock size={14} />
+                        <Text size="xs">
+                            Last modified: {format(fromUnixTime(lastModified), "MMM d, yyyy 'at' h:mm a")}
+                        </Text>
+                    </Group>
+                </Stack>
+                
+                <Group gap="sm">
+                    <Button 
+                        component={Link}
+                        to="/$resumeId/edit" 
+                        params={{ resumeId }} 
+                        variant="light"
+                        leftSection={<Edit size={16} />}
+                    >
+                        Edit
+                    </Button>
+                    
+                    <Button
+                        component="a"
+                        href={`http://localhost:8090/build-resume/${resumeId}`}
+                        target="_blank"
+                        variant="default"
+                        leftSection={<Download size={16} />}
+                    >
+                        Download
+                    </Button>
+
+                    <Menu position="bottom-end" shadow="md" width={200}>
+                        <Menu.Target>
+                            <ActionIcon variant="subtle" size="lg" radius="md">
+                                <MoreVertical size={20} />
+                            </ActionIcon>
+                        </Menu.Target>
+
+                        <Menu.Dropdown>
+                            <Menu.Label>Actions</Menu.Label>
+                            <Menu.Item 
+                                leftSection={<ExternalLink style={{ width: rem(14), height: rem(14) }} />}
+                                component="a"
+                                href={`http://localhost:8090/build-resume/${resumeId}`}
+                                target="_blank"
+                            >
+                                Preview in Browser
+                            </Menu.Item>
+                            
+                            <Menu.Divider />
+                            
+                            <Menu.Label>Danger zone</Menu.Label>
+                            <Menu.Item 
+                                color="red"
+                                leftSection={<Trash2 style={{ width: rem(14), height: rem(14) }} />}
+                                onClick={() => {
+                                    if (window.confirm(`Are you sure you want to delete "${resumeName}"?`)) {
+                                        deleteResume({ resumeId });
+                                    }
+                                }}
+                            >
+                                Delete Resume
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                </Group>
+            </Group>
+        </Card>
     );
 };
 
 export const YourAvailableResumes = () => {
     const [response] = useGetAvailableResumesQuery();
-    const resumes = response?.data?.getAvailableResumes?.toSorted((x) => x.lastModified) ?? [];
+    
+    const resumes = React.useMemo(() => {
+        const rawResumes = response?.data?.getAvailableResumes ?? [];
+        return R.pipe(
+            rawResumes,
+            R.sortBy([R.descBy((x) => x.lastModified)])
+        );
+    }, [response?.data?.getAvailableResumes]);
+
+    if (resumes.length === 0 && !response.fetching) {
+        return (
+            <Card padding="xl" radius="md" withBorder style={{ borderStyle: 'dashed', textAlign: 'center', backgroundColor: 'transparent' }}>
+                <Text c="dimmed">You haven't created any resumes yet. Click the button above to get started!</Text>
+            </Card>
+        );
+    }
 
     return (
-        <div className={"flex flex-col gap-7"}>
+        <Stack gap="md">
             {resumes.map((resume) => (
                 <AvailableResumeComponent key={resume.resumeId} {...resume} />
             ))}
-        </div>
+        </Stack>
     );
 };

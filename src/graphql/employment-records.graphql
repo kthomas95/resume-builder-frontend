@@ -1,36 +1,36 @@
-fragment EmploymentProps on EmploymentRecord {
-    employer
-    summary
-    title
-    yearsEmployed
-}
-
-fragment WorkHistoryComponent on WorkHistoryComponent {
-    record {
-        ...EmploymentProps
-    }
-    id
-    description
-}
-
-subscription GetEmploymentComponents {
-    getEmploymentRecords {
-        ...WorkHistoryComponent
-    }
-}
-
-mutation NewEmploymentComponent($description: String!) {
-    newEmploymentRecord(description: $description)
-}
-
-mutation UpdateEmploymentComponent($id: UUID!, $record: UpdateEmploymentRecordInput!) {
-    updateEmploymentRecord(id: $id, record: $record)
-}
-
-mutation DeleteEmploymentComponent($id: UUID!) {
-    deleteEmploymentRecord(id: $id)
-}
-
-mutation InsertEmploymentComponentIntoResume($resumeId: UUID!, $componentId: UUID!) {
-    insertEmploymentRecordIntoResume(resumeId: $resumeId, employmentId: $componentId)
-}
+#fragment EmploymentProps on EmploymentRecord {
+#    employer
+#    summary
+#    title
+#    yearsEmployed
+#}
+#
+#fragment WorkHistoryComponent on WorkHistoryComponent {
+#    record {
+#        ...EmploymentProps
+#    }
+#    id
+#    description
+#}
+#
+#subscription GetEmploymentComponents {
+#    getEmploymentRecords {
+#        ...WorkHistoryComponent
+#    }
+#}
+#
+#mutation NewEmploymentComponent($description: String!) {
+#    newEmploymentRecord(description: $description)
+#}
+#
+#mutation UpdateEmploymentComponent($id: UUID!, $record: UpdateEmploymentRecordInput!) {
+#    updateEmploymentRecord(id: $id, record: $record)
+#}
+#
+#mutation DeleteEmploymentComponent($id: UUID!) {
+#    deleteEmploymentRecord(id: $id)
+#}
+#
+#mutation InsertEmploymentComponentIntoResume($resumeId: UUID!, $componentId: UUID!) {
+#    insertEmploymentRecordIntoResume(resumeId: $resumeId, employmentId: $componentId)
+#}

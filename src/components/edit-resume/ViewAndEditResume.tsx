@@ -5,43 +5,61 @@ import { EditWorkExperience } from "../employment/EditWorkExperience";
 import * as React from "react";
 import { EditSummary } from "./EditSummary";
 import { resumeContext, useGetResume } from "./resume-context";
-import { buttonStyles } from "../../styles/button";
 import { EditDescription } from "./EditDescription";
 import { useTitle } from "react-use";
+import { Stack, Divider, Affix, Button, rem, Center, Loader } from "@mantine/core";
+import { Download } from "lucide-react";
 
 export const ViewAndEditResume = ({ id }: { id: string }) => {
     const resume = useGetResume(id);
 
     useTitle(resume?.description ?? "Loading Resume");
-    if (!resume) return <div>Loading Resume Data for {id}</div>;
+    
+    if (!resume) {
+        return (
+            <Center h="50vh">
+                <Stack align="center">
+                    <Loader size="md" />
+                    <div>Loading Resume Data for {id}</div>
+                </Stack>
+            </Center>
+        );
+    }
 
     return (
         <resumeContext.Provider value={resume}>
-            <div className={"px-5 pb-32 mx-auto flex flex-col gap-4"}>
+            <Stack gap="md" pb={rem(120)}>
                 <EditDescription />
                 <EditName />
                 <EditAttributes />
                 <EditSummary />
-                <hr className={"opacity-30 my-3"} />
-                {resume.sections.map((section) => {
+                
+                <Divider my="xl" label="Sections" labelPosition="center" />
+                
+                {resume.sections.map((section, index) => {
                     if (section.__typename === "EducationRecords") {
-                        return <EditEducation {...section} />;
+                        return <EditEducation key={index} {...section} />;
                     }
                     if (section.__typename === "EmploymentRecords") {
-                        return <EditWorkExperience {...section} />;
+                        return <EditWorkExperience key={index} {...section} />;
                     }
                     return null;
                 })}
-                <div className="fixed right-18 bottom-9 flex">
-                    <a
+                
+                <Affix position={{ bottom: 40, right: 40 }}>
+                    <Button
+                        component="a"
                         href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
-                        target={"_blank"}
-                        className={"btn btn-primary text-lg p-3 !rounded-full"}
+                        target="_blank"
+                        size="lg"
+                        radius="xl"
+                        leftSection={<Download size={20} />}
+                        shadow="xl"
                     >
-                        Build Resume
-                    </a>
-                </div>
-            </div>
+                        Build PDF
+                    </Button>
+                </Affix>
+            </Stack>
         </resumeContext.Provider>
     );
 };

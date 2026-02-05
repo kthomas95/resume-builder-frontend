@@ -1,5 +1,5 @@
 schema:
-    - https://resume-api.kthomas.me/graphql
-    - http://10.0.0.21:8090/graphql
+#    - https://resume-api.kthomas.me/graphql
+    - http://localhost:8090/graphql
 
 documents: '**/*.graphql'

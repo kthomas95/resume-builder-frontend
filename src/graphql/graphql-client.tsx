@@ -19,10 +19,9 @@ const useClient = () => {
         });
 
         return new Client({
-            // url: import.meta.env.VITE_GQL_URL ?? "https://resume-api.kthomas.me/graphql",
-            url: "http://localhost:8090/graphql",
+            url: import.meta.env.VITE_GQL_URL,
             fetchOptions: {
-                headers: headers ?? undefined,
+                credentials: 'include',
             },
             exchanges: [
                 cacheExchange,

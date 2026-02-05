@@ -1,0 +1,6 @@
+mutation LoginWithGoogle($token: String!) {
+    loginWithGoogle(token: $token) {
+        message
+        success
+    }
+}

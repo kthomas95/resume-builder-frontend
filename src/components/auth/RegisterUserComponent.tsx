@@ -1,14 +1,23 @@
-import { Dialog } from "radix-ui";
-import { dialogStyles } from "../../styles/dialog";
-import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import { textFieldStyles } from "../../styles/textfield";
 import { useRegisterUserMutation } from "../../__generated__/graphql";
-import { buttonStyles } from "../../styles/button";
+import { 
+    Button, 
+    Modal, 
+    TextInput, 
+    PasswordInput, 
+    Stack, 
+    Title, 
+    Text, 
+    Alert 
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { UserPlus, User, Lock, CheckCircle } from "lucide-react";
 
 export const RegisterUserComponent = () => {
     const [registerStatus, sendRegistration] = useRegisterUserMutation();
     const registeredUser = registerStatus?.data?.registerUser?.username;
+    const [opened, { open, close }] = useDisclosure(false);
+
     const form = useForm({
         defaultValues: {
             username: "",
@@ -16,47 +25,68 @@ export const RegisterUserComponent = () => {
             confirmPassword: "",
         },
         onSubmit: async ({ value }) => {
-            sendRegistration({ username: value.username, password: value.password });
+            await sendRegistration({ username: value.username, password: value.password });
         },
     });
+
     return (
-        <Dialog.Root>
-            <Dialog.Trigger>Register User</Dialog.Trigger>
-            <Dialog.Overlay className={dialogStyles.overlay()} />
-            <Dialog.Content className={dialogStyles.content({ class: "flex flex-col gap-3" })}>
-                <form.Field
-                    name={"username"}
-                    children={(props) => (
-                        <input
-                            className={textFieldStyles.input()}
-                            placeholder={"Username"}
-                            value={props.state.value}
-                            onChange={(e) => props.handleChange(e.target.value)}
-                            type={"text"}
+        <>
+            <Button variant="outline" onClick={open} leftSection={<UserPlus size={16} />}>
+                Register
+            </Button>
+
+            <Modal 
+                opened={opened} 
+                onClose={close} 
+                title="Create Account" 
+                centered
+            >
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.handleSubmit();
+                    }}
+                >
+                    <Stack gap="md">
+                        {registeredUser && (
+                            <Alert variant="light" color="green" title="Success" icon={<CheckCircle size={16} />}>
+                                User <b>{registeredUser}</b> has been created. You can now sign in.
+                            </Alert>
+                        )}
+
+                        <form.Field
+                            name={"username"}
+                            children={(field) => (
+                                <TextInput
+                                    label="Username"
+                                    placeholder="Choose a username"
+                                    leftSection={<User size={16} />}
+                                    value={field.state.value}
+                                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                                    required
+                                />
+                            )}
                         />
-                    )}
-                />
-                <form.Field
-                    name={"password"}
-                    children={(props) => (
-                        <input
-                            className={textFieldStyles.input()}
-                            placeholder={"Password"}
-                            value={props.state.value}
-                            onChange={(e) => props.handleChange(e.target.value)}
-                            type={"password"}
+                        <form.Field
+                            name={"password"}
+                            children={(field) => (
+                                <PasswordInput
+                                    label="Password"
+                                    placeholder="Choose a password"
+                                    leftSection={<Lock size={16} />}
+                                    value={field.state.value}
+                                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                                    required
+                                />
+                            )}
                         />
-                    )}
-                />
-                <button onClick={form.handleSubmit} className={"btn btn-primary"}>
-                    Register User
-                </button>
-                {registeredUser && (
-                    <div>
-                        User <b>{registeredUser}</b> has been created.
-                    </div>
-                )}
-            </Dialog.Content>
-        </Dialog.Root>
+                        <Button type="submit" fullWidth mt="md">
+                            Register User
+                        </Button>
+                    </Stack>
+                </form>
+            </Modal>
+        </>
     );
 };

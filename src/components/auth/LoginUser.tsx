@@ -1,13 +1,20 @@
-import { useReducer } from "react";
 import { useForm } from "@tanstack/react-form";
-import { textFieldStyles } from "../../styles/textfield";
 import { useAtom } from "jotai/react";
 import { UserAtom } from "../../atoms/UserAtom";
-import { Dialog, VisuallyHidden } from "radix-ui";
 import { LoginMutation, useLoginMutation } from "../../__generated__/graphql";
+import { 
+    TextInput, 
+    PasswordInput, 
+    Button, 
+    Stack, 
+    Title, 
+    Text, 
+    Alert 
+} from "@mantine/core";
+import { AlertCircle, Lock, User } from "lucide-react";
 
 const useLogin = () => {
-    const [currentUser, setCurrentUser] = useAtom(UserAtom);
+    const [, setCurrentUser] = useAtom(UserAtom);
     const [mutationResponse, sendMutation] = useLoginMutation();
 
     const loginUser = async (loginProps: {
@@ -23,12 +30,8 @@ const useLogin = () => {
     };
     return { loginUser, response: mutationResponse?.data?.login };
 };
-export const LoginForm = () => {
-    const [state, dispatch] = useReducer((prev) => prev, {
-        username: "",
-        password: "",
-    });
 
+export const LoginForm = () => {
     const { loginUser, response } = useLogin();
 
     const loginForm = useForm({
@@ -37,61 +40,59 @@ export const LoginForm = () => {
             password: "",
         },
         onSubmit: async ({ value }) => {
-            const repsonse = await loginUser(value);
+            await loginUser(value);
         },
     });
 
     return (
         <form
-            className={"p-2 flex flex-col gap-3"}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 loginForm.handleSubmit();
             }}
         >
-            <Dialog.Title className={"font-bold"}>Login</Dialog.Title>
-            <VisuallyHidden.Root>
-                <Dialog.Description>Login User</Dialog.Description>
-            </VisuallyHidden.Root>
-            <loginForm.Field
-                name={"username"}
-                children={(field) => (
-                    <fieldset className={textFieldStyles.fieldset()}>
-                        <label htmlFor={field.name} className={textFieldStyles.label()}>
-                            Username
-                        </label>
-                        <input
-                            type={"text"}
+            <Stack gap="md">
+                <Title order={3}>Sign In</Title>
+                
+                {response?.__typename && response?.__typename !== "Success" && (
+                    <Alert variant="light" color="red" title="Login Failed" icon={<AlertCircle size={16} />}>
+                        {response.__typename === "InvalidUsername" ? "Username not found." : "Incorrect password."}
+                    </Alert>
+                )}
+
+                <loginForm.Field
+                    name={"username"}
+                    children={(field) => (
+                        <TextInput
+                            label="Username"
+                            placeholder="Your username"
+                            leftSection={<User size={16} />}
                             id={field.name}
                             value={field.state.value}
-                            className={textFieldStyles.input()}
-                            onChange={(e) => field.handleChange(e.target.value)}
+                            onChange={(e) => field.handleChange(e.currentTarget.value)}
+                            required
                         />
-                    </fieldset>
-                )}
-            />
-            <loginForm.Field
-                name={"password"}
-                children={(field) => (
-                    <fieldset className={textFieldStyles.fieldset()}>
-                        <label htmlFor={field.name} className={textFieldStyles.label()}>
-                            Password
-                        </label>
-                        <input
-                            type={"password"}
+                    )}
+                />
+                <loginForm.Field
+                    name={"password"}
+                    children={(field) => (
+                        <PasswordInput
+                            label="Password"
+                            placeholder="Your password"
+                            leftSection={<Lock size={16} />}
                             id={field.name}
                             value={field.state.value}
-                            className={textFieldStyles.input()}
-                            onChange={(e) => field.handleChange(e.target.value)}
+                            onChange={(e) => field.handleChange(e.currentTarget.value)}
+                            required
                         />
-                    </fieldset>
-                )}
-            />
-            <button type={"submit"} className={"btn btn-primary"}>
-                Login
-            </button>
-            <div>{response?.__typename}</div>
+                    )}
+                />
+                <Button type="submit" fullWidth mt="md">
+                    Login
+                </Button>
+            </Stack>
         </form>
     );
 };

@@ -1,11 +1,12 @@
-import { ChangeEvent, HTMLInputTypeAttribute, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { TextInput, Textarea } from "@mantine/core";
 
 export interface TextFieldProps {
     className?: string;
     placeholder?: string;
     initialValue: string;
     commitChange: (value: string) => void;
-    type?: HTMLInputTypeAttribute;
+    type?: string;
     asTextArea?: boolean;
     id?: string;
 }
@@ -13,17 +14,16 @@ export interface TextFieldProps {
 export const useTextFieldValue = (initialValue?: string) => {
     const [value, setValue] = useState(initialValue ?? "");
     useEffect(() => {
-        setValue(initialValue ?? value);
+        setValue(initialValue ?? "");
     }, [initialValue]);
 
     return {
-        onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(e.target.value),
+        onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(e.currentTarget.value),
         value,
     };
 };
 
 export const TextField = ({
-    className,
     commitChange,
     initialValue,
     placeholder,
@@ -33,16 +33,30 @@ export const TextField = ({
 }: TextFieldProps) => {
     const inputStateProps = useTextFieldValue(initialValue);
 
-    const Component = asTextArea ? "textarea" : "input";
+    if (asTextArea) {
+        return (
+            <Textarea
+                id={id}
+                placeholder={placeholder}
+                onBlur={() => commitChange(inputStateProps.value)}
+                {...inputStateProps}
+                variant="filled"
+                radius="md"
+                autosize
+                minRows={2}
+            />
+        );
+    }
 
     return (
-        <Component
+        <TextInput
             type={type ?? "text"}
             id={id}
             placeholder={placeholder}
-            className={className}
             onBlur={() => commitChange(inputStateProps.value)}
             {...inputStateProps}
+            variant="filled"
+            radius="md"
         />
     );
 };

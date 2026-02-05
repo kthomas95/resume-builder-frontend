@@ -1,41 +1,69 @@
 import { useNavigate } from "@tanstack/react-router";
 import * as React from "react";
-import { useState } from "react";
-import { textFieldStyles } from "../../styles/textfield";
+import { 
+    Button, 
+    Modal, 
+    TextInput,
+    Stack,
+    Group
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { Plus } from "lucide-react";
 import { useNewResumeMutation } from "../../__generated__/graphql";
 
 export const CreateNewResume = () => {
-    const createResume = useNewResumeMutation()[1];
-    const nav = useNavigate();
-    const [description, setDescription] = useState("");
+    const [opened, { open, close }] = useDisclosure(false);
+    const [name, setName] = React.useState("");
+    const [, createResume] = useNewResumeMutation();
+    const navigate = useNavigate();
+
+    const onSubmit = async () => {
+        const result = await createResume({ description: name });
+        if (result.data?.newResume) {
+            navigate({
+                to: "/$resumeId/edit",
+                params: { resumeId: result.data.newResume },
+            });
+        }
+        close();
+    };
 
     return (
-        <div className="flex gap-4 justify-center h-10">
-            <fieldset className="h-full flex">
-                <input
-                    type={"text"}
-                    className={textFieldStyles.input({ class: "h-full" })}
-                    placeholder={"Resume Description"}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-            </fieldset>
-
-            <button
-                className={
-                    "bg-sky-600 ring-sky-600 ring-2 hover:bg-sky-500 px-4 py-2 text-sky-50 whitespace-nowrap shadow-md rounded-md font-semibold"
-                }
-                onClick={() => {
-                    createResume({ description }).then((result) => {
-                        const resumeId = result?.data?.newResume;
-                        if (resumeId) {
-                            nav({ to: "/$resumeId/edit", params: { resumeId } });
-                        }
-                    });
-                }}
+        <>
+            <Button 
+                onClick={open}
+                leftSection={<Plus size={20} />}
+                radius="md"
             >
                 Create New Resume
-            </button>
-        </div>
+            </Button>
+
+            <Modal 
+                opened={opened} 
+                onClose={close} 
+                title="Create New Resume" 
+                centered
+            >
+                <Stack>
+                    <TextInput
+                        label="Resume Title"
+                        placeholder="e.g., Senior Frontend Engineer"
+                        description="Give your resume a name to help you identify it later."
+                        value={name}
+                        onChange={(event) => setName(event.currentTarget.value)}
+                        autoFocus
+                    />
+                    
+                    <Group justify="flex-end" mt="md">
+                        <Button variant="subtle" color="gray" onClick={close}>
+                            Cancel
+                        </Button>
+                        <Button onClick={onSubmit} disabled={!name.trim()}>
+                            Create Resume
+                        </Button>
+                    </Group>
+                </Stack>
+            </Modal>
+        </>
     );
 };

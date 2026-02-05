@@ -2,19 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import * as v from "valibot";
 
 export const loggedInResponseSchema = v.object({
-    id: v.number(),
+    id: v.string(), // Changed to string as most IDs in this app are now strings
     name: v.string(),
     token: v.string(),
 });
 
 export const Route = createFileRoute("/loggedin")({
     component: RouteComponent,
-    validateSearch: loggedInResponseSchema,
+    validateSearch: (search) => v.parse(loggedInResponseSchema, search),
 });
 
 function RouteComponent() {
-    const params = Route.useParams();
     const search = Route.useSearch();
-    const context = Route.useRouteContext();
-    return <div>{JSON.stringify({ context, params, search })}</div>;
+    return (
+        <div style={{ padding: '20px' }}>
+            <h1>Login Successful</h1>
+            <pre>{JSON.stringify(search, null, 2)}</pre>
+        </div>
+    );
 }

@@ -1,35 +1,47 @@
-import { useContext, useEffect, useState } from "react";
-import { TextField } from "../common/TextField";
+import { useContext } from "react";
 import { resumeContext } from "./resume-context";
-import { textFieldStyles } from "../../styles/textfield";
-import { BuildResumeRequest, useGetSummariesSubscription, useImportSummaryMutation } from "../../__generated__/graphql";
-import { DropdownMenu } from "radix-ui";
-
-export interface EditSummaryProps extends Pick<BuildResumeRequest, "summary"> {
-    id: string;
-}
+import { useGetSummariesSubscription, useImportSummaryMutation } from "../../__generated__/graphql";
+import { 
+    Textarea, 
+    Stack, 
+    Group, 
+    Title, 
+    Button, 
+    Menu, 
+    Text,
+    rem
+} from "@mantine/core";
+import { Download, FileText } from "lucide-react";
 
 const ImportSummary = () => {
     const summaries = useGetSummariesSubscription()[0]?.data?.getSummaries ?? [];
     const resumeId = useContext(resumeContext).id;
-    const [importResponse, importSummary] = useImportSummaryMutation();
+    const [, importSummary] = useImportSummaryMutation();
+    
     return (
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger className={"text-sm italic"}>Import</DropdownMenu.Trigger>
-            <DropdownMenu.Content className={"p-3 bg-white rounded-md shadow-md flex flex-col gap-3"}>
+        <Menu shadow="md" width={250} position="bottom-end">
+            <Menu.Target>
+                <Button variant="subtle" size="xs" leftSection={<Download size={14} />}>
+                    Import from Library
+                </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+                <Menu.Label>Summary Library</Menu.Label>
                 {summaries.map((summary) => (
-                    <DropdownMenu.DropdownMenuItem asChild>
-                        <button
-                            onClick={() => {
-                                importSummary({ resumeId, summaryId: summary.id });
-                            }}
-                        >
-                            {summary.description}
-                        </button>
-                    </DropdownMenu.DropdownMenuItem>
+                    <Menu.Item
+                        key={summary.id}
+                        onClick={() => {
+                            importSummary({ resumeId, summaryId: summary.id });
+                        }}
+                    >
+                        {summary.description}
+                    </Menu.Item>
                 ))}
-            </DropdownMenu.Content>
-        </DropdownMenu.Root>
+                {summaries.length === 0 && (
+                    <Menu.Item disabled>No saved summaries found</Menu.Item>
+                )}
+            </Menu.Dropdown>
+        </Menu>
     );
 };
 
@@ -37,17 +49,25 @@ export const EditSummary = () => {
     const { summary, updateResume } = useContext(resumeContext);
 
     return (
-        <div className={"flex flex-col container mx-auto"}>
-            <div className={"p-3 flex justify-between"}>
-                <h4 className={"font-semibold"}>Summary</h4>
+        <Stack gap="xs" maw={1000} mx="auto" w="100%">
+            <Group justify="space-between" align="center">
+                <Group gap="xs">
+                    <FileText size={20} color="var(--mantine-color-blue-6)" />
+                    <Title order={4}>Professional Summary</Title>
+                </Group>
                 <ImportSummary />
-            </div>
-            <TextField
-                initialValue={summary}
-                commitChange={(value) => updateResume({ summary: value })}
-                className={textFieldStyles.input({ class: "h-24" })}
-                asTextArea={true}
+            </Group>
+            
+            <Textarea
+                placeholder="Briefly describe your professional background and key strengths..."
+                minRows={4}
+                maxRows={10}
+                autosize
+                value={summary}
+                onChange={(e) => updateResume({ summary: e.currentTarget.value })}
+                variant="filled"
+                radius="md"
             />
-        </div>
+        </Stack>
     );
 };
