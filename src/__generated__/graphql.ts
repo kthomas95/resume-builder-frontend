@@ -102,6 +102,25 @@ export const ResumeTitleFragmentDoc = gql`
   name
 }
     `;
+export const AvailableResumeFragmentDoc = gql`
+    fragment AvailableResume on AvailableResume {
+  title
+  id
+  lastModifiedSeconds
+  description
+}
+    `;
+export const GetAvailableResumesDocument = gql`
+    subscription GetAvailableResumes {
+  viewAvailableResumes {
+    ...AvailableResume
+  }
+}
+    ${AvailableResumeFragmentDoc}`;
+
+export function useGetAvailableResumesSubscription<TData = GetAvailableResumesSubscription>(options?: Omit<Urql.UseSubscriptionArgs<GetAvailableResumesSubscriptionVariables>, 'query'>, handler?: Urql.SubscriptionHandler<GetAvailableResumesSubscription, TData>) {
+  return Urql.useSubscription<GetAvailableResumesSubscription, TData, GetAvailableResumesSubscriptionVariables>({ query: GetAvailableResumesDocument, ...options }, handler);
+};
 export const GetResumeDocument = gql`
     subscription getResume($resumeId: String!) {
   subscribeToResume(resumeId: $resumeId) {
@@ -211,6 +230,13 @@ export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel
 export type ResumeSettingsFragment = { baseFontSize: number };
 
 export type ResumeTitleFragment = { name: string };
+
+export type AvailableResumeFragment = { title: string, id: string, lastModifiedSeconds: string, description: string };
+
+export type GetAvailableResumesSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAvailableResumesSubscription = { viewAvailableResumes: Array<AvailableResumeFragment> };
 
 export type GetResumeSubscriptionVariables = Exact<{
   resumeId: Scalars['String']['input'];

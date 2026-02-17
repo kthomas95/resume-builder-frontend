@@ -1,0 +1,12 @@
+fragment AvailableResume on AvailableResume {
+    title
+    id
+    lastModifiedSeconds
+    description
+}
+
+subscription GetAvailableResumes {
+    viewAvailableResumes {
+        ...AvailableResume
+    }
+}

@@ -1,7 +1,0 @@
-#query GetAvailableResumes {
-#    getAvailableResumes {
-#        description
-#        lastModified
-#        resumeId
-#    }
-#}
