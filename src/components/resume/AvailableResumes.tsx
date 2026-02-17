@@ -9,26 +9,26 @@ import {
     Text,
     Group,
     Stack,
-    Box,
     rem
 } from "@mantine/core";
 import { MoreVertical, Edit, Trash2, Download, Clock, ExternalLink } from "lucide-react";
-import { AvailableResume, useDeleteResumeMutation, useGetAvailableResumesQuery } from "../../__generated__/graphql";
+import { AvailableResume, useGetAvailableResumesSubscription, useDeleteResumeMutation } from "../../__generated__/graphql";
 import * as R from "remeda";
 
-const AvailableResumeComponent = ({ description, resumeId, lastModified }: AvailableResume) => {
+const AvailableResumeComponent = ({ description, id, lastModifiedSeconds, title }: AvailableResume) => {
     const [, deleteResume] = useDeleteResumeMutation();
-    const resumeName = description !== "" ? description : "Untitled Resume";
+    const resumeName = title !== "" ? title : (description !== "" ? description : "Untitled Resume");
     
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Group justify="space-between" align="center">
                 <Stack gap={4}>
                     <Text size="lg" fw={700}>{resumeName}</Text>
+                    {description && <Text size="sm" c="dimmed">{description}</Text>}
                     <Group gap="xs" c="dimmed">
                         <Clock size={14} />
                         <Text size="xs">
-                            Last modified: {format(fromUnixTime(lastModified), "MMM d, yyyy 'at' h:mm a")}
+                            Last modified: {format(fromUnixTime(Number(lastModifiedSeconds)), "MMM d, yyyy 'at' h:mm a")}
                         </Text>
                     </Group>
                 </Stack>
@@ -37,7 +37,7 @@ const AvailableResumeComponent = ({ description, resumeId, lastModified }: Avail
                     <Button 
                         component={Link}
                         to="/$resumeId/edit" 
-                        params={{ resumeId }} 
+                        params={{ resumeId: id }} 
                         variant="light"
                         leftSection={<Edit size={16} />}
                     >
@@ -46,7 +46,7 @@ const AvailableResumeComponent = ({ description, resumeId, lastModified }: Avail
                     
                     <Button
                         component="a"
-                        href={`http://localhost:8090/build-resume/${resumeId}`}
+                        href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
                         target="_blank"
                         variant="default"
                         leftSection={<Download size={16} />}
@@ -66,7 +66,7 @@ const AvailableResumeComponent = ({ description, resumeId, lastModified }: Avail
                             <Menu.Item 
                                 leftSection={<ExternalLink style={{ width: rem(14), height: rem(14) }} />}
                                 component="a"
-                                href={`http://localhost:8090/build-resume/${resumeId}`}
+                                href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
                                 target="_blank"
                             >
                                 Preview in Browser
@@ -80,7 +80,7 @@ const AvailableResumeComponent = ({ description, resumeId, lastModified }: Avail
                                 leftSection={<Trash2 style={{ width: rem(14), height: rem(14) }} />}
                                 onClick={() => {
                                     if (window.confirm(`Are you sure you want to delete "${resumeName}"?`)) {
-                                        deleteResume({ resumeId });
+                                        deleteResume({ id });
                                     }
                                 }}
                             >
@@ -95,17 +95,17 @@ const AvailableResumeComponent = ({ description, resumeId, lastModified }: Avail
 };
 
 export const YourAvailableResumes = () => {
-    const [response] = useGetAvailableResumesQuery();
+    const [{ data, fetching }] = useGetAvailableResumesSubscription();
     
     const resumes = React.useMemo(() => {
-        const rawResumes = response?.data?.getAvailableResumes ?? [];
+        const rawResumes = data?.viewAvailableResumes ?? [];
         return R.pipe(
             rawResumes,
-            R.sortBy([R.descBy((x) => x.lastModified)])
+            R.sortBy([(x) => Number(x.lastModifiedSeconds), 'desc'])
         );
-    }, [response?.data?.getAvailableResumes]);
+    }, [data?.viewAvailableResumes]);
 
-    if (resumes.length === 0 && !response.fetching) {
+    if (resumes.length === 0 && !fetching) {
         return (
             <Card padding="xl" radius="md" withBorder style={{ borderStyle: 'dashed', textAlign: 'center', backgroundColor: 'transparent' }}>
                 <Text c="dimmed">You haven't created any resumes yet. Click the button above to get started!</Text>
@@ -116,7 +116,7 @@ export const YourAvailableResumes = () => {
     return (
         <Stack gap="md">
             {resumes.map((resume) => (
-                <AvailableResumeComponent key={resume.resumeId} {...resume} />
+                <AvailableResumeComponent key={resume.id} {...resume} />
             ))}
         </Stack>
     );

@@ -6,6 +6,8 @@ import { useTitle } from "react-use";
 import { Title, Text, Button, Group, Container, Stack, Box, Avatar } from "@mantine/core";
 import { FileText, Plus, Rocket } from "lucide-react";
 import { useHelloQueryQuery } from "../__generated__/graphql";
+import { CreateNewResume } from "../components/resume/CreateNewResume";
+import { YourAvailableResumes } from "../components/resume/AvailableResumes";
 
 export const Route = createFileRoute("/")({
     component: HomeComponent,
@@ -53,22 +55,16 @@ function HomeComponent() {
     }
 
     return (
-        <div>
-            You are logged in! Welcome {user.token} {JSON.stringify(hello[0]?.data?.me)}
-        </div>
+        <Stack gap="xl">
+            <Group justify="space-between" align="center">
+                <Title order={2} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <FileText size={28} color="var(--mantine-color-blue-filled)" />
+                    Your Resumes
+                </Title>
+                <CreateNewResume />
+            </Group>
+
+            <YourAvailableResumes />
+        </Stack>
     );
-
-    // return (
-    //     <Stack gap="xl">
-    //         <Group justify="space-between" align="center">
-    //             <Title order={2} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    //                 <FileText size={28} color="var(--mantine-color-blue-filled)" />
-    //                 Your Resumes
-    //             </Title>
-    //             <CreateNewResume />
-    //         </Group>
-
-    //         <YourAvailableResumes />
-    //     </Stack>
-    // );
 }

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, CSSProperties, useEffect, useState } from "react";
 import { TextInput, Textarea } from "@mantine/core";
 
 export interface TextFieldProps {
@@ -9,6 +9,12 @@ export interface TextFieldProps {
     type?: string;
     asTextArea?: boolean;
     id?: string;
+    label?: string;
+    style?: CSSProperties;
+    size?: string;
+    fw?: number | string;
+    variant?: string;
+    styles?: any;
 }
 
 export const useTextFieldValue = (initialValue?: string) => {
@@ -30,6 +36,12 @@ export const TextField = ({
     type,
     id,
     asTextArea,
+    label,
+    style,
+    size,
+    fw,
+    variant,
+    styles,
 }: TextFieldProps) => {
     const inputStateProps = useTextFieldValue(initialValue);
 
@@ -37,13 +49,18 @@ export const TextField = ({
         return (
             <Textarea
                 id={id}
+                label={label}
                 placeholder={placeholder}
                 onBlur={() => commitChange(inputStateProps.value)}
                 {...inputStateProps}
-                variant="filled"
+                variant={variant ?? "filled"}
                 radius="md"
                 autosize
                 minRows={2}
+                style={style}
+                size={size}
+                fw={fw}
+                styles={styles}
             />
         );
     }
@@ -52,11 +69,16 @@ export const TextField = ({
         <TextInput
             type={type ?? "text"}
             id={id}
+            label={label}
             placeholder={placeholder}
             onBlur={() => commitChange(inputStateProps.value)}
             {...inputStateProps}
-            variant="filled"
+            variant={variant ?? "filled"}
             radius="md"
+            style={style}
+            size={size}
+            fw={fw}
+            styles={styles}
         />
     );
 };

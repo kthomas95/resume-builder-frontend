@@ -1,17 +1,15 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { resumeContext } from "./resume-context";
-import { TextInput } from "@mantine/core";
+import { TextField } from "../common/TextField";
 
 export const EditDescription = () => {
     const { updateResume, description } = useContext(resumeContext);
-    const [localDescription, setLocalDescription] = useState(description);
     return (
-        <TextInput
+        <TextField
             variant="unstyled"
             placeholder="Describe Your Resume"
-            value={localDescription}
-            onChange={(e) => setLocalDescription(e.currentTarget.value)}
-            onBlur={() => updateResume({ description: localDescription })}
+            initialValue={description}
+            commitChange={(val) => updateResume({ description: val })}
             styles={{
                 input: {
                     textAlign: 'right',

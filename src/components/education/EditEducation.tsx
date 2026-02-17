@@ -19,13 +19,13 @@ import {
     Stack, 
     Text, 
     Card, 
-    TextInput, 
     Modal, 
     Divider,
     UnstyledButton,
     rem
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { TextField } from "../common/TextField";
 
 const AddUniversityRecord = () => {
     const { updateResume, id } = useContext(resumeContext);
@@ -86,29 +86,29 @@ export const EditEducationRecord = ({
 }: EditEducationProps) => {
     return (
         <Stack gap="md">
-            <TextInput
+            <TextField
                 label="University"
                 placeholder="e.g. Stanford University"
-                value={universityName}
-                onChange={(e) => updateRecord({ newUniversityName: e.currentTarget.value })}
+                initialValue={universityName}
+                commitChange={(val) => updateRecord({ newUniversityName: val })}
             />
-            <TextInput
+            <TextField
                 label="Years Attended"
                 placeholder="e.g. 2016 - 2020"
-                value={label}
-                onChange={(e) => updateRecord({ newLabel: e.currentTarget.value })}
+                initialValue={label}
+                commitChange={(val) => updateRecord({ newLabel: val })}
             />
-            <TextInput
+            <TextField
                 label="Degree Type"
                 placeholder="e.g. Bachelor of Science"
-                value={degreeType}
-                onChange={(e) => updateRecord({ newDegreeType: e.currentTarget.value })}
+                initialValue={degreeType}
+                commitChange={(val) => updateRecord({ newDegreeType: val })}
             />
-            <TextInput
+            <TextField
                 label="Major"
                 placeholder="e.g. Computer Science"
-                value={major}
-                onChange={(e) => updateRecord({ newMajor: e.currentTarget.value })}
+                initialValue={major}
+                commitChange={(val) => updateRecord({ newMajor: val })}
             />
             
             <Divider label="Minors" labelPosition="left" />
@@ -116,11 +116,11 @@ export const EditEducationRecord = ({
             <Stack gap="xs">
                 {minors.map((minor, minorIndex) => (
                     <Group key={minorIndex} grow preventGrowOverflow={false}>
-                        <TextInput
+                        <TextField
                             placeholder="Minor"
-                            value={minor}
-                            onChange={(e) => updateRecord({
-                                newMinors: minors.map((m, i) => i === minorIndex ? e.currentTarget.value : m)
+                            initialValue={minor}
+                            commitChange={(val) => updateRecord({
+                                newMinors: minors.map((m, i) => i === minorIndex ? val : m)
                             })}
                             style={{ flex: 1 }}
                         />

@@ -1,34 +1,22 @@
-import { createContext } from "react";
-import {
-    BuildResumeRequest,
-    Resume,
-    ResumePropsFragment,
-    UpdateResumeInfoInput,
-    useGetResumeSubscription,
-    useManageResumeInfoMutation,
-} from "../../__generated__/graphql";
+import { createContext, useContext } from "react";
+import { useGetResumeSubscription } from "../../__generated__/graphql";
+import { useModifyResume } from "../resume/use-modify-resume";
+import { ResumeUpdater } from "../../types";
 
-interface ResumeContext extends ResumePropsFragment {
-    updateResume: (request: UpdateResumeInfoInput) => void;
-    description: string;
-    id: string;
+type ResumeData = NonNullable<ReturnType<typeof useGetResumeSubscription>[0]['data']>['subscribeToResume'];
+
+interface ResumeContextValue {
+    resume: ResumeData;
+    mutate: (request: ResumeUpdater) => void;
+    resumeId: string;
 }
 
-export const resumeContext = createContext<ResumeContext>(null as never);
+export const ResumeContext = createContext<ResumeContextValue | null>(null);
 
-export const useGetResume = (id: string): ResumeContext | null => {
-    const resume = useGetResumeSubscription({ variables: { id } })[0].data?.resume;
-
-    const editResume = useManageResumeInfoMutation()[1];
-
-    if (!resume || !editResume) return null;
-
-    return {
-        ...resume.currentResume,
-        id,
-        description: resume.description,
-        updateResume: (request: UpdateResumeInfoInput): void => {
-            editResume({ request, id });
-        },
-    };
+export const useResume = () => {
+    const context = useContext(ResumeContext);
+    if (!context) {
+        throw new Error("useResume must be used within a ResumeProvider");
+    }
+    return context;
 };

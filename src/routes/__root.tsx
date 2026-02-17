@@ -41,32 +41,6 @@ function RootComponent() {
                                     <Button variant="subtle" component={Link} to="/">
                                         {currentUser ? "Your Resumes" : "Home"}
                                     </Button>
-
-                                    <Menu shadow="md" width={200} trigger="hover" openDelay={100} closeDelay={400}>
-                                        <Menu.Target>
-                                            <Button variant="subtle" rightSection={<ChevronDown size={14} />}>
-                                                Components
-                                            </Button>
-                                        </Menu.Target>
-
-                                        <Menu.Dropdown>
-                                            <Menu.Label>Library</Menu.Label>
-                                            <Menu.Item leftSection={<Briefcase size={14} />} component={Link} to="/employment">
-                                                Work History
-                                            </Menu.Item>
-                                            <Menu.Item leftSection={<GraduationCap size={14} />} component={Link} to="/education">
-                                                Education
-                                            </Menu.Item>
-                                            <Menu.Item leftSection={<FileText size={14} />} component={Link} to="/summaries">
-                                                Summaries
-                                            </Menu.Item>
-                                            <Menu.Divider />
-                                            <Menu.Label>Project Layouts</Menu.Label>
-                                            <Menu.Item leftSection={<Layout size={14} />}>
-                                                Manage Templates
-                                            </Menu.Item>
-                                        </Menu.Dropdown>
-                                    </Menu>
                                 </Group>
                             </Group>
 

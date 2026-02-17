@@ -1,51 +1,132 @@
-import { EditName } from "./EditName";
-import { EditAttributes } from "./EditAttributes";
-import { EditEducation } from "../education/EditEducation";
-import { EditWorkExperience } from "../employment/EditWorkExperience";
 import * as React from "react";
-import { EditSummary } from "./EditSummary";
-import { resumeContext, useGetResume } from "./resume-context";
-import { EditDescription } from "./EditDescription";
+import { Stack, Divider, Affix, Button, rem, Center, Loader, Container, Group, Title, ActionIcon, Menu, Text } from "@mantine/core";
+import { Download, Plus, Settings, Trash2 } from "lucide-react";
+import { useGetResumeSubscription } from "../../__generated__/graphql";
+import { useModifyResume } from "../resume/use-modify-resume";
+import { ResumeContext } from "./resume-context";
+import { ResumeTitleEditor } from "./ResumeTitleEditor";
+import { ContactItemsEditor } from "./ContactItemsEditor";
+import { GenericSection } from "./GenericSection";
+import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
 import { useTitle } from "react-use";
-import { Stack, Divider, Affix, Button, rem, Center, Loader } from "@mantine/core";
-import { Download } from "lucide-react";
+import {ResumeUpdater} from "../../types";
 
 export const ViewAndEditResume = ({ id }: { id: string }) => {
-    const resume = useGetResume(id);
+    const [{ data, fetching, error }] = useGetResumeSubscription({ variables: { resumeId: id } });
+    const mutate = useModifyResume(id);
 
-    useTitle(resume?.description ?? "Loading Resume");
-    
-    if (!resume) {
+    const resume = data?.subscribeToResume;
+    useTitle(resume?.title || "Loading Resume");
+
+    if (fetching) {
         return (
             <Center h="50vh">
                 <Stack align="center">
                     <Loader size="md" />
-                    <div>Loading Resume Data for {id}</div>
+                    <Text>Loading Resume Data...</Text>
                 </Stack>
             </Center>
         );
     }
 
+    if (error || !resume) {
+        return (
+            <Center h="50vh">
+                <Stack align="center">
+                    <Title order={3} c="red">Error Loading Resume</Title>
+                    <Text>{error?.message || "Resume not found"}</Text>
+                </Stack>
+            </Center>
+        );
+    }
+
+    const resumeData = resume.resumeData;
+
     return (
-        <resumeContext.Provider value={resume}>
-            <Stack gap="md" pb={rem(120)}>
-                <EditDescription />
-                <EditName />
-                <EditAttributes />
-                <EditSummary />
-                
-                <Divider my="xl" label="Sections" labelPosition="center" />
-                
-                {resume.sections.map((section, index) => {
-                    if (section.__typename === "EducationRecords") {
-                        return <EditEducation key={index} {...section} />;
-                    }
-                    if (section.__typename === "EmploymentRecords") {
-                        return <EditWorkExperience key={index} {...section} />;
-                    }
-                    return null;
-                })}
-                
+        <ResumeContext.Provider value={{ resume, mutate, resumeId: id }}>
+            <Stack gap="xl" pb={rem(120)}>
+                <Group justify="space-between" align="flex-start">
+                    <Stack gap={0}>
+                        <Title order={2}>{resume.title}</Title>
+                        <Text c="dimmed">{resume.description}</Text>
+                    </Stack>
+                    <Group>
+                         <Button
+                            component="a"
+                            href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
+                            target="_blank"
+                            variant="filled"
+                            leftSection={<Download size={20} />}
+                        >
+                            Preview PDF
+                        </Button>
+                    </Group>
+                </Group>
+
+                <Divider />
+
+                <ResumeTitleEditor 
+                    name={resumeData.title.name} 
+                    onUpdate={(newName) => mutate({
+                        type: ResumeUpdater.Type.UpdateName,
+                        newName
+                    })}
+                />
+
+                <ContactItemsEditor 
+                    items={resumeData.contactItems}
+                    onUpdate={mutate}
+                />
+
+                <ResumeSettingsEditor
+                    settings={resumeData.settings}
+                    onUpdate={(size) => mutate({
+                        type: ResumeUpdater.Type.UpdateSettings,
+                        updater: {
+                            type: SettingsUpdater.Type.UpdateBaseFontSize,
+                            size
+                        }
+                    })}
+                />
+
+                <Divider label="Sections" labelPosition="center" />
+
+                <Stack gap="lg">
+                    {resumeData.sections.map((section, index) => (
+                        <GenericSection
+                            key={index}
+                            title={section.title}
+                            contentItems={section.contentItems}
+                            onUpdate={(updater) => mutate({
+                                type: ResumeUpdater.Type.UpdateSection,
+                                index,
+                                updater
+                            })}
+                            onRemove={() => mutate({
+                                type: ResumeUpdater.Type.RemoveSection,
+                                index
+                            })}
+                        />
+                    ))}
+                </Stack>
+
+                <Group justify="center" py="xl">
+                    <Button 
+                        size="md" 
+                        variant="outline" 
+                        leftSection={<Plus size={20} />}
+                        onClick={() => mutate({
+                            type: ResumeUpdater.Type.AddSection,
+                            section: {
+                                title: "New Section",
+                                contentItems: []
+                            }
+                        })}
+                    >
+                        Add New Section
+                    </Button>
+                </Group>
+
                 <Affix position={{ bottom: 40, right: 40 }}>
                     <Button
                         component="a"
@@ -54,12 +135,12 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                         size="lg"
                         radius="xl"
                         leftSection={<Download size={20} />}
-                        shadow="xl"
+                        style={{ boxShadow: 'var(--mantine-shadow-xl)' }}
                     >
                         Build PDF
                     </Button>
                 </Affix>
             </Stack>
-        </resumeContext.Provider>
+        </ResumeContext.Provider>
     );
 };

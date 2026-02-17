@@ -7,11 +7,10 @@ import {
     useUpdateSummaryMutation,
 } from "../__generated__/graphql";
 import { useState, useMemo } from "react";
+import { TextField } from "../components/common/TextField";
 import { 
     Stack, 
     Group, 
-    TextInput, 
-    Textarea, 
     Button, 
     Card, 
     Title, 
@@ -58,26 +57,21 @@ export const CreateNewSummaryButton = () => {
 };
 
 export const StoredSummary = ({ id, summaryText, description }: GetSummariesSubscription["getSummaries"][number]) => {
-    const [localSummary, setLocalSummary] = useState(summaryText);
-    const [localDescription, setLocalDescription] = useState(description);
     const [, updateSummary] = useUpdateSummaryMutation();
     const [, deleteSummary] = useDeleteSummaryMutation();
     
-    const isDirty = localSummary !== summaryText || localDescription !== description;
-
-    const handleUpdate = () => {
-        updateSummary({ id, summaryText: localSummary, description: localDescription });
+    const handleUpdate = (summary: string, desc: string) => {
+        updateSummary({ id, summaryText: summary, description: desc });
     };
 
     return (
         <Card shadow="xs" padding="lg" radius="md" withBorder>
             <Stack gap="md">
                 <Group justify="space-between">
-                    <TextInput
+                    <TextField
                         variant="unstyled"
-                        value={localDescription}
-                        onChange={(e) => setLocalDescription(e.currentTarget.value)}
-                        onBlur={handleUpdate}
+                        initialValue={description}
+                        commitChange={(val) => handleUpdate(summaryText, val)}
                         placeholder="Snippet Name"
                         styles={{
                             input: { 
@@ -91,11 +85,6 @@ export const StoredSummary = ({ id, summaryText, description }: GetSummariesSubs
                     />
                     
                     <Group gap="xs">
-                        {isDirty && (
-                            <Badge color="orange" variant="light" leftSection={<AlertCircle size={10} />}>
-                                Unsaved Changes
-                            </Badge>
-                        )}
                         <ActionIcon 
                             variant="light" 
                             color="red" 
@@ -110,30 +99,12 @@ export const StoredSummary = ({ id, summaryText, description }: GetSummariesSubs
                     </Group>
                 </Group>
 
-                <Textarea
+                <TextField
                     placeholder="Describe your professional background..."
-                    minRows={4}
-                    maxRows={10}
-                    autosize
-                    value={localSummary}
-                    onChange={(e) => setLocalSummary(e.currentTarget.value)}
-                    onBlur={handleUpdate}
-                    variant="filled"
-                    radius="md"
+                    initialValue={summaryText}
+                    commitChange={(val) => handleUpdate(val, description)}
+                    asTextArea={true}
                 />
-                
-                {isDirty && (
-                    <Group justify="flex-end">
-                        <Button 
-                            size="xs" 
-                            variant="light" 
-                            leftSection={<Save size={14} />}
-                            onClick={handleUpdate}
-                        >
-                            Save Changes
-                        </Button>
-                    </Group>
-                )}
             </Stack>
         </Card>
     );

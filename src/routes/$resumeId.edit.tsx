@@ -7,5 +7,6 @@ export const Route = createFileRoute("/$resumeId/edit")({
 });
 
 function AboutComponent() {
+    // return <div>Edit</div>
     return <ViewAndEditResume id={Route.useParams().resumeId} />;
 }

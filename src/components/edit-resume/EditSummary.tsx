@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { resumeContext } from "./resume-context";
 import { useGetSummariesSubscription, useImportSummaryMutation } from "../../__generated__/graphql";
 import { 
-    Textarea, 
     Stack, 
     Group, 
     Title, 
@@ -12,6 +11,7 @@ import {
     rem
 } from "@mantine/core";
 import { Download, FileText } from "lucide-react";
+import { TextField } from "../common/TextField";
 
 const ImportSummary = () => {
     const summaries = useGetSummariesSubscription()[0]?.data?.getSummaries ?? [];
@@ -58,15 +58,11 @@ export const EditSummary = () => {
                 <ImportSummary />
             </Group>
             
-            <Textarea
+            <TextField
                 placeholder="Briefly describe your professional background and key strengths..."
-                minRows={4}
-                maxRows={10}
-                autosize
-                value={summary}
-                onChange={(e) => updateResume({ summary: e.currentTarget.value })}
-                variant="filled"
-                radius="md"
+                initialValue={summary}
+                commitChange={(val) => updateResume({ summary: val })}
+                asTextArea={true}
             />
         </Stack>
     );

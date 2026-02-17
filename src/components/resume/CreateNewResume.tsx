@@ -18,7 +18,7 @@ export const CreateNewResume = () => {
     const navigate = useNavigate();
 
     const onSubmit = async () => {
-        const result = await createResume({ description: name });
+        const result = await createResume({ title: name, description: null });
         if (result.data?.newResume) {
             navigate({
                 to: "/$resumeId/edit",

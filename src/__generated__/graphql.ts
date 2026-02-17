@@ -40,6 +40,7 @@ export const ParagraphFragmentDoc = gql`
     `;
 export const ResumeTextFragmentDoc = gql`
     fragment ResumeText on ResumeText {
+  __typename
   ... on BulletPoints {
     ...BulletPoints
   }
@@ -110,6 +111,15 @@ export const AvailableResumeFragmentDoc = gql`
   description
 }
     `;
+export const DeleteResumeDocument = gql`
+    mutation DeleteResume($id: String!) {
+  deleteResume(id: $id)
+}
+    `;
+
+export function useDeleteResumeMutation() {
+  return Urql.useMutation<DeleteResumeMutation, DeleteResumeMutationVariables>(DeleteResumeDocument);
+};
 export const GetAvailableResumesDocument = gql`
     subscription GetAvailableResumes {
   viewAvailableResumes {
@@ -199,6 +209,13 @@ export const NewResumeDocument = gql`
 export function useNewResumeMutation() {
   return Urql.useMutation<NewResumeMutation, NewResumeMutationVariables>(NewResumeDocument);
 };
+export type DeleteResumeMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteResumeMutation = { deleteResume: boolean };
+
 export type ContactItemFragment = { value: string, icon: ResumeContactIcon };
 
 export type BulletPointsFragment = { columns: number, bulletItems: Array<string> };
@@ -211,11 +228,20 @@ export type ParagraphFragment = { text: string };
 
 export type SectionItemsFragment = { item: ResumeSectionItemFragment };
 
-export type ResumeText_BulletPoints_Fragment = BulletPointsFragment;
+export type ResumeText_BulletPoints_Fragment = (
+  { __typename: 'BulletPoints' }
+  & BulletPointsFragment
+);
 
-export type ResumeText_Columns_Fragment = ColumnsFragment;
+export type ResumeText_Columns_Fragment = (
+  { __typename: 'Columns' }
+  & ColumnsFragment
+);
 
-export type ResumeText_Paragraph_Fragment = ParagraphFragment;
+export type ResumeText_Paragraph_Fragment = (
+  { __typename: 'Paragraph' }
+  & ParagraphFragment
+);
 
 export type ResumeTextFragment = ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment;
 

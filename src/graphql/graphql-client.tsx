@@ -11,8 +11,8 @@ const useClient = () => {
         const headers = user ? { Authorization: `Bearer ${user.token}` } : null;
 
         const wsClient = createWSClient({
-            // url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
-            url: "https://resume-api.kthomas.me/subscriptions",
+            url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
+            // url: "https://resume-api.kthomas.me/subscriptions",
             connectionParams: {
                 headers,
             },

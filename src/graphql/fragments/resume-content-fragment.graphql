@@ -25,6 +25,8 @@ fragment SectionItems on SectionItem {
 }
 
 fragment ResumeText on ResumeText {
+    __typename
+
     ... on BulletPoints {
         ...BulletPoints
     }

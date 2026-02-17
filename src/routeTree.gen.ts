@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as AuthcallbackImport } from './routes/authcallback'
 import { Route as IndexImport } from './routes/index'
+import { Route as ResumeIdEditImport } from './routes/$resumeId.edit'
 
 // Create/Update Routes
 
@@ -25,6 +26,12 @@ const AuthcallbackRoute = AuthcallbackImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ResumeIdEditRoute = ResumeIdEditImport.update({
+  id: '/$resumeId/edit',
+  path: '/$resumeId/edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthcallbackImport
       parentRoute: typeof rootRoute
     }
+    '/$resumeId/edit': {
+      id: '/$resumeId/edit'
+      path: '/$resumeId/edit'
+      fullPath: '/$resumeId/edit'
+      preLoaderRoute: typeof ResumeIdEditImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +68,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/authcallback': typeof AuthcallbackRoute
+  '/$resumeId/edit': typeof ResumeIdEditRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/authcallback': typeof AuthcallbackRoute
+  '/$resumeId/edit': typeof ResumeIdEditRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/authcallback': typeof AuthcallbackRoute
+  '/$resumeId/edit': typeof ResumeIdEditRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/authcallback'
+  fullPaths: '/' | '/authcallback' | '/$resumeId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/authcallback'
-  id: '__root__' | '/' | '/authcallback'
+  to: '/' | '/authcallback' | '/$resumeId/edit'
+  id: '__root__' | '/' | '/authcallback' | '/$resumeId/edit'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthcallbackRoute: typeof AuthcallbackRoute
+  ResumeIdEditRoute: typeof ResumeIdEditRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthcallbackRoute: AuthcallbackRoute,
+  ResumeIdEditRoute: ResumeIdEditRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +116,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/authcallback"
+        "/authcallback",
+        "/$resumeId/edit"
       ]
     },
     "/": {
@@ -105,6 +125,9 @@ export const routeTree = rootRoute
     },
     "/authcallback": {
       "filePath": "authcallback.tsx"
+    },
+    "/$resumeId/edit": {
+      "filePath": "$resumeId.edit.tsx"
     }
   }
 }
