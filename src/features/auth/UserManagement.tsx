@@ -59,7 +59,7 @@ export const UserManagement = () => {
                 token: "SESSION_MANAGED",
             });
             close();
-            window.location.reload(); // Reload to ensure all components see the session
+            window.location.reload(); // Reload to ensure all features see the session
         } else {
             console.error("Login failed:", result);
         }

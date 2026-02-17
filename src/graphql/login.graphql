@@ -1,11 +1,6 @@
-# IGNORE
-#mutation Login($username: String!, $password: String!) {
-#    login(username: $username, password: $password) {
-#        __typename
-#        ... on Success {
-#            expiration
-#            token
-#            username
-#        }
-#    }
-#}
+mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+        success
+        message
+    }
+}

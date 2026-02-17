@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ViewAndEditResume } from "../components/edit-resume/ViewAndEditResume";
+import { ViewAndEditResume } from "../features/edit-resume/ViewAndEditResume";
 
 export const Route = createFileRoute("/$resumeId/edit")({
     component: AboutComponent,

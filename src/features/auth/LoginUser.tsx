@@ -2,15 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { useAtom } from "jotai/react";
 import { UserAtom } from "../../atoms/UserAtom";
 import { LoginMutation, useLoginMutation } from "../../__generated__/graphql";
-import { 
-    TextInput, 
-    PasswordInput, 
-    Button, 
-    Stack, 
-    Title, 
-    Text, 
-    Alert 
-} from "@mantine/core";
+import { TextInput, PasswordInput, Button, Stack, Title, Text, Alert } from "@mantine/core";
 import { AlertCircle, Lock, User } from "lucide-react";
 
 const useLogin = () => {
@@ -23,8 +15,8 @@ const useLogin = () => {
     }): Promise<LoginMutation["login"] | undefined> => {
         const result = await sendMutation(loginProps);
         const loginResponse = result?.data?.login;
-        if (loginResponse?.__typename === "Success") {
-            setCurrentUser({ username: loginResponse.username, token: loginResponse.token });
+        if (loginResponse?.success === true) {
+            // setCurrentUser({ username: loginResponse.username, token: loginResponse.token });
         }
         return loginResponse;
     };
@@ -54,12 +46,12 @@ export const LoginForm = () => {
         >
             <Stack gap="md">
                 <Title order={3}>Sign In</Title>
-                
-                {response?.__typename && response?.__typename !== "Success" && (
-                    <Alert variant="light" color="red" title="Login Failed" icon={<AlertCircle size={16} />}>
-                        {response.__typename === "InvalidUsername" ? "Username not found." : "Incorrect password."}
-                    </Alert>
-                )}
+
+                {/*{response?.__typename && response?.__typename !== "Success" && (*/}
+                {/*    <Alert variant="light" color="red" title="Login Failed" icon={<AlertCircle size={16} />}>*/}
+                {/*        {response.__typename === "InvalidUsername" ? "Username not found." : "Incorrect password."}*/}
+                {/*    </Alert>*/}
+                {/*)}*/}
 
                 <loginForm.Field
                     name={"username"}

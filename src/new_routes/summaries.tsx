@@ -7,18 +7,8 @@ import {
     useUpdateSummaryMutation,
 } from "../__generated__/graphql";
 import { useState, useMemo } from "react";
-import { TextField } from "../components/common/TextField";
-import { 
-    Stack, 
-    Group, 
-    Button, 
-    Card, 
-    Title, 
-    Text, 
-    ActionIcon, 
-    Badge,
-    rem
-} from "@mantine/core";
+import { TextField } from "../features/common/TextField";
+import { Stack, Group, Button, Card, Title, Text, ActionIcon, Badge, rem } from "@mantine/core";
 import { Plus, Trash2, Save, FileText, AlertCircle } from "lucide-react";
 import * as R from "remeda";
 
@@ -44,12 +34,9 @@ export const CreateNewSummaryButton = () => {
                 style={{ flex: 1 }}
                 value={value}
                 onChange={(e) => setValue(e.currentTarget.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             />
-            <Button 
-                onClick={handleCreate}
-                leftSection={<Plus size={16} />}
-            >
+            <Button onClick={handleCreate} leftSection={<Plus size={16} />}>
                 Create
             </Button>
         </Group>
@@ -59,7 +46,7 @@ export const CreateNewSummaryButton = () => {
 export const StoredSummary = ({ id, summaryText, description }: GetSummariesSubscription["getSummaries"][number]) => {
     const [, updateSummary] = useUpdateSummaryMutation();
     const [, deleteSummary] = useDeleteSummaryMutation();
-    
+
     const handleUpdate = (summary: string, desc: string) => {
         updateSummary({ id, summaryText: summary, description: desc });
     };
@@ -74,20 +61,20 @@ export const StoredSummary = ({ id, summaryText, description }: GetSummariesSubs
                         commitChange={(val) => handleUpdate(summaryText, val)}
                         placeholder="Snippet Name"
                         styles={{
-                            input: { 
-                                fontSize: rem(16), 
-                                fontWeight: 700, 
-                                fontStyle: 'italic',
-                                height: 'auto',
-                                minHeight: 0
-                            }
+                            input: {
+                                fontSize: rem(16),
+                                fontWeight: 700,
+                                fontStyle: "italic",
+                                height: "auto",
+                                minHeight: 0,
+                            },
                         }}
                     />
-                    
+
                     <Group gap="xs">
-                        <ActionIcon 
-                            variant="light" 
-                            color="red" 
+                        <ActionIcon
+                            variant="light"
+                            color="red"
                             onClick={() => {
                                 if (window.confirm("Delete this summary snippet?")) {
                                     deleteSummary({ id });
@@ -113,14 +100,19 @@ export const StoredSummary = ({ id, summaryText, description }: GetSummariesSubs
 export const DisplaySummaries = () => {
     const summariesResponse = useGetSummariesSubscription()[0];
     const rawSummaries = summariesResponse.data?.getSummaries ?? [];
-    
+
     const summaries = useMemo(() => {
         return R.sortBy(rawSummaries, [R.ascBy((x) => x.description)]);
     }, [rawSummaries]);
 
     if (summaries.length === 0 && !summariesResponse.fetching) {
         return (
-            <Text ta="center" py="xl" c="dimmed" style={{ border: `${rem(1)} dashed var(--mantine-color-gray-4)`, borderRadius: rem(8) }}>
+            <Text
+                ta="center"
+                py="xl"
+                c="dimmed"
+                style={{ border: `${rem(1)} dashed var(--mantine-color-gray-4)`, borderRadius: rem(8) }}
+            >
                 Your summary library is empty.
             </Text>
         );
@@ -128,7 +120,9 @@ export const DisplaySummaries = () => {
 
     return (
         <Stack gap="md">
-            {summaries.map((summary) => <StoredSummary key={summary.id} {...summary} />)}
+            {summaries.map((summary) => (
+                <StoredSummary key={summary.id} {...summary} />
+            ))}
         </Stack>
     );
 };
@@ -140,13 +134,13 @@ function RouteComponent() {
                 <FileText size={28} color="var(--mantine-color-blue-6)" />
                 <Title order={2}>Professional Summaries</Title>
             </Group>
-            
+
             <Text c="dimmed" size="sm">
                 Create and manage different versions of your professional summary to tailor for specific roles.
             </Text>
-            
+
             <CreateNewSummaryButton />
-            
+
             <DisplaySummaries />
         </Stack>
     );

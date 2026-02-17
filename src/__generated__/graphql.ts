@@ -191,6 +191,18 @@ export const LoginWithGoogleDocument = gql`
 export function useLoginWithGoogleMutation() {
   return Urql.useMutation<LoginWithGoogleMutation, LoginWithGoogleMutationVariables>(LoginWithGoogleDocument);
 };
+export const LoginDocument = gql`
+    mutation Login($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    success
+    message
+  }
+}
+    `;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
 export const ModifyResumeDocument = gql`
     mutation ModifyResume($id: String!, $requestString: String!) {
   mutateResume(id: $id, requestString: $requestString)
@@ -283,6 +295,14 @@ export type LoginWithGoogleMutationVariables = Exact<{
 
 export type LoginWithGoogleMutation = { loginWithGoogle: { message?: string | null, success: boolean } };
 
+export type LoginMutationVariables = Exact<{
+  username: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type LoginMutation = { login: { success: boolean, message?: string | null } };
+
 export type ModifyResumeMutationVariables = Exact<{
   id: Scalars['String']['input'];
   requestString: Scalars['String']['input'];
@@ -344,6 +364,7 @@ export interface HelloResponse {
 export interface Mutation {
   deleteResume: Scalars['Boolean']['output'];
   duplicateResume?: Maybe<Scalars['String']['output']>;
+  login: AuthResponse;
   loginWithGoogle: AuthResponse;
   logout: Scalars['Boolean']['output'];
   mutateResume: Scalars['Boolean']['output'];
@@ -359,6 +380,12 @@ export interface MutationDeleteResumeArgs {
 export interface MutationDuplicateResumeArgs {
   id: Scalars['String']['input'];
   newTitle: Scalars['String']['input'];
+}
+
+
+export interface MutationLoginArgs {
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 }
 
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
 import { GraphQLProvider } from "../graphql/graphql-client";
-import { UserManagement } from "../components/auth/UserManagement";
+import { UserManagement } from "../features/auth/UserManagement";
 import { UserAtom } from "../atoms/UserAtom";
 import { useAtomValue } from "jotai/react";
 import { MantineProvider, createTheme, AppShell, Group, Button, Menu, Text, Container, Title } from "@mantine/core";
@@ -21,15 +21,11 @@ export const Route = createRootRoute({
 function RootComponent() {
     const currentUser = useAtomValue(UserAtom);
 
-
     return (
         <MantineProvider theme={theme}>
             <Notifications />
             <GraphQLProvider>
-                <AppShell
-                    header={{ height: 70 }}
-                    padding="md"
-                >
+                <AppShell header={{ height: 70 }} padding="md">
                     <AppShell.Header px="xl">
                         <Group h="100%" justify="space-between">
                             <Group>
