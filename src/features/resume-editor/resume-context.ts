@@ -1,12 +1,9 @@
 import { createContext, useContext } from "react";
-import { useGetResumeSubscription } from "../../__generated__/graphql";
-import { useModifyResume } from "../resume/use-modify-resume";
+import { ResumeFragment } from "../../__generated__/graphql";
 import { ResumeUpdater } from "../../types";
 
-type ResumeData = NonNullable<ReturnType<typeof useGetResumeSubscription>[0]['data']>['subscribeToResume'];
-
 interface ResumeContextValue {
-    resume: ResumeData;
+    resume: ResumeFragment;
     mutate: (request: ResumeUpdater) => void;
     resumeId: string;
 }

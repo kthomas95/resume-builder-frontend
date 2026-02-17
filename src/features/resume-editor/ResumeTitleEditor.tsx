@@ -1,22 +1,25 @@
 import * as React from "react";
 import { Paper, Title, Stack } from "@mantine/core";
-import { ResumeUpdater } from "../../types";
 import { TextField } from "../common/TextField";
+import { useResume } from "./resume-context";
+import { ResumeUpdater } from "../../types";
 
-interface ResumeTitleEditorProps {
-    name: string;
-    onUpdate: (name: string) => void;
-}
+export const ResumeTitleEditor = () => {
+    const { mutate, resume } = useResume();
 
-export const ResumeTitleEditor = ({ name, onUpdate }: ResumeTitleEditorProps) => {
     return (
         <Paper p="md" withBorder radius="md">
             <Stack gap="sm">
                 <Title order={4}>Resume Title / Name</Title>
                 <TextField
                     placeholder="Your Full Name"
-                    initialValue={name}
-                    commitChange={(val) => onUpdate(val)}
+                    initialValue={resume.resumeData.title.name}
+                    commitChange={(newName) => {
+                        mutate({
+                            type: ResumeUpdater.Type.UpdateName,
+                            newName,
+                        });
+                    }}
                     size="xl"
                     fw={700}
                 />

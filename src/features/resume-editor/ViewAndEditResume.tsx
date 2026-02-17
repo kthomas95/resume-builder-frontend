@@ -1,15 +1,29 @@
 import * as React from "react";
-import { Stack, Divider, Affix, Button, rem, Center, Loader, Container, Group, Title, ActionIcon, Menu, Text } from "@mantine/core";
+import {
+    Stack,
+    Divider,
+    Affix,
+    Button,
+    rem,
+    Center,
+    Loader,
+    Container,
+    Group,
+    Title,
+    ActionIcon,
+    Menu,
+    Text,
+} from "@mantine/core";
 import { Download, Plus, Settings, Trash2 } from "lucide-react";
 import { useGetResumeSubscription } from "../../__generated__/graphql";
-import { useModifyResume } from "../resume/use-modify-resume";
+import { useModifyResume } from "./use-modify-resume";
 import { ResumeContext } from "./resume-context";
 import { ResumeTitleEditor } from "./ResumeTitleEditor";
 import { ContactItemsEditor } from "./ContactItemsEditor";
-import { GenericSection } from "./GenericSection";
+import { GenericSection } from "./section/GenericSection";
 import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
 import { useTitle } from "react-use";
-import {ResumeUpdater} from "../../types";
+import { ResumeUpdater, SettingsUpdater } from "../../types";
 
 export const ViewAndEditResume = ({ id }: { id: string }) => {
     const [{ data, fetching, error }] = useGetResumeSubscription({ variables: { resumeId: id } });
@@ -33,7 +47,9 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
         return (
             <Center h="50vh">
                 <Stack align="center">
-                    <Title order={3} c="red">Error Loading Resume</Title>
+                    <Title order={3} c="red">
+                        Error Loading Resume
+                    </Title>
                     <Text>{error?.message || "Resume not found"}</Text>
                 </Stack>
             </Center>
@@ -51,7 +67,7 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                         <Text c="dimmed">{resume.description}</Text>
                     </Stack>
                     <Group>
-                         <Button
+                        <Button
                             component="a"
                             href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
                             target="_blank"
@@ -65,29 +81,11 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
 
                 <Divider />
 
-                <ResumeTitleEditor 
-                    name={resumeData.title.name} 
-                    onUpdate={(newName) => mutate({
-                        type: ResumeUpdater.Type.UpdateName,
-                        newName
-                    })}
-                />
+                <ResumeTitleEditor />
 
-                <ContactItemsEditor 
-                    items={resumeData.contactItems}
-                    onUpdate={mutate}
-                />
+                <ContactItemsEditor items={resumeData.contactItems} onUpdate={mutate} />
 
-                <ResumeSettingsEditor
-                    settings={resumeData.settings}
-                    onUpdate={(size) => mutate({
-                        type: ResumeUpdater.Type.UpdateSettings,
-                        updater: {
-                            type: SettingsUpdater.Type.UpdateBaseFontSize,
-                            size
-                        }
-                    })}
-                />
+                <ResumeSettingsEditor />
 
                 <Divider label="Sections" labelPosition="center" />
 
@@ -97,31 +95,37 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                             key={index}
                             title={section.title}
                             contentItems={section.contentItems}
-                            onUpdate={(updater) => mutate({
-                                type: ResumeUpdater.Type.UpdateSection,
-                                index,
-                                updater
-                            })}
-                            onRemove={() => mutate({
-                                type: ResumeUpdater.Type.RemoveSection,
-                                index
-                            })}
+                            onUpdate={(updater) =>
+                                mutate({
+                                    type: ResumeUpdater.Type.UpdateSection,
+                                    index,
+                                    updater,
+                                })
+                            }
+                            onRemove={() =>
+                                mutate({
+                                    type: ResumeUpdater.Type.RemoveSection,
+                                    index,
+                                })
+                            }
                         />
                     ))}
                 </Stack>
 
                 <Group justify="center" py="xl">
-                    <Button 
-                        size="md" 
-                        variant="outline" 
+                    <Button
+                        size="md"
+                        variant="outline"
                         leftSection={<Plus size={20} />}
-                        onClick={() => mutate({
-                            type: ResumeUpdater.Type.AddSection,
-                            section: {
-                                title: "New Section",
-                                contentItems: []
-                            }
-                        })}
+                        onClick={() =>
+                            mutate({
+                                type: ResumeUpdater.Type.AddSection,
+                                section: {
+                                    title: "New Section",
+                                    contentItems: [],
+                                },
+                            })
+                        }
                     >
                         Add New Section
                     </Button>
@@ -135,7 +139,7 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                         size="lg"
                         radius="xl"
                         leftSection={<Download size={20} />}
-                        style={{ boxShadow: 'var(--mantine-shadow-xl)' }}
+                        style={{ boxShadow: "var(--mantine-shadow-xl)" }}
                     >
                         Build PDF
                     </Button>

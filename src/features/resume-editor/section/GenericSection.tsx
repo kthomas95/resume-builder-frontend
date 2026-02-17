@@ -2,9 +2,9 @@ import * as React from "react";
 import { ActionIcon, Button, Group, Menu, Paper, Stack, Title } from "@mantine/core";
 import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { SectionItemEditor } from "./SectionItemEditor";
-import { TextContentEditor } from "./TextContentEditor";
-import { ContentUpdater, ResumeContent, ResumeText, SectionUpdater } from "../../types";
-import { ResumeContent_SectionItem_Fragment, ResumeContent_TextContent_Fragment } from "../../__generated__/graphql";
+import { TextContentEditor } from "../text-content/TextContentEditor";
+import { ContentUpdater, ResumeContent, ResumeText, SectionUpdater } from "../../../types";
+import { ResumeContent_SectionItem_Fragment, ResumeContent_TextContent_Fragment } from "../../../__generated__/graphql";
 import Type = ContentUpdater.Type;
 
 interface GenericSectionProps {

@@ -1,31 +1,32 @@
 import * as React from "react";
 import { Stack, ActionIcon, Group, Button, NumberInput } from "@mantine/core";
 import { Trash2, Plus, GripVertical } from "lucide-react";
-import { TextField } from "../common/TextField";
+import { TextField } from "../../common/TextField";
 import {
     BulletPointsFragment,
     ColumnsFragment,
     ParagraphFragment,
-    ResumeTextFragment
-} from "../../__generated__/graphql";
-import {ContentUpdater} from "../../types";
+    ResumeTextFragment,
+} from "../../../__generated__/graphql";
+import { ContentUpdater } from "../../../types";
 
 interface TextContentEditorProps {
-    text: ResumeTextFragment// Using any for now to simplify with GraphQL fragments
+    text: ResumeTextFragment; // Using any for now to simplify with GraphQL fragments
     onUpdate: (updater: ContentUpdater) => void;
 }
 
 export const TextContentEditor = ({ text, onUpdate }: TextContentEditorProps) => {
-
     if (text.__typename === "Paragraph") {
         return (
             <TextField
                 label="Paragraph"
                 initialValue={text.text}
-                commitChange={(val) => onUpdate({
-                    type: ContentUpdater.Type.UpdateParagraph,
-                    text: val
-                })}
+                commitChange={(val) =>
+                    onUpdate({
+                        type: ContentUpdater.Type.UpdateParagraph,
+                        text: val,
+                    })
+                }
                 asTextArea={true}
             />
         );
@@ -39,10 +40,12 @@ export const TextContentEditor = ({ text, onUpdate }: TextContentEditorProps) =>
                     <NumberInput
                         label="Columns"
                         value={text.columns}
-                        onChange={(val) => onUpdate({
-                            type: ContentUpdater.Type.UpdateBulletPoints,
-                            columns: Number(val)
-                        })}
+                        onChange={(val) =>
+                            onUpdate({
+                                type: ContentUpdater.Type.UpdateBulletPoints,
+                                columns: Number(val),
+                            })
+                        }
                         min={1}
                         max={3}
                         style={{ width: 80 }}
@@ -61,30 +64,34 @@ export const TextContentEditor = ({ text, onUpdate }: TextContentEditorProps) =>
                                 newItems[index] = val;
                                 onUpdate({
                                     type: ContentUpdater.Type.UpdateBulletPoints,
-                                    items: newItems
+                                    items: newItems,
                                 });
                             }}
                         />
-                        <ActionIcon 
-                            color="red" 
+                        <ActionIcon
+                            color="red"
                             variant="subtle"
-                            onClick={() => onUpdate({
-                                type: ContentUpdater.Type.RemoveBulletPoint,
-                                index
-                            })}
+                            onClick={() =>
+                                onUpdate({
+                                    type: ContentUpdater.Type.RemoveBulletPoint,
+                                    index,
+                                })
+                            }
                         >
                             <Trash2 size={14} />
                         </ActionIcon>
                     </Group>
                 ))}
-                <Button 
-                    variant="subtle" 
-                    size="xs" 
+                <Button
+                    variant="subtle"
+                    size="xs"
                     leftSection={<Plus size={14} />}
-                    onClick={() => onUpdate({
-                        type: ContentUpdater.Type.AddBulletPoint,
-                        item: ""
-                    })}
+                    onClick={() =>
+                        onUpdate({
+                            type: ContentUpdater.Type.AddBulletPoint,
+                            item: "",
+                        })
+                    }
                 >
                     Add Bullet Point
                 </Button>
@@ -106,7 +113,7 @@ export const TextContentEditor = ({ text, onUpdate }: TextContentEditorProps) =>
                                 newColumns[colIndex] = { ...col, label: val };
                                 onUpdate({
                                     type: ContentUpdater.Type.UpdateColumns,
-                                    items: newColumns
+                                    items: newColumns,
                                 });
                             }}
                         />
@@ -121,7 +128,7 @@ export const TextContentEditor = ({ text, onUpdate }: TextContentEditorProps) =>
                                     newColumns[colIndex] = { ...col, items: newItems };
                                     onUpdate({
                                         type: ContentUpdater.Type.UpdateColumns,
-                                        items: newColumns
+                                        items: newColumns,
                                     });
                                 }}
                             />

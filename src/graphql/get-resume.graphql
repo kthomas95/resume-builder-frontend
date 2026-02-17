@@ -1,26 +1,5 @@
 subscription getResume($resumeId: String!) {
     subscribeToResume(resumeId: $resumeId) {
-        description
-        id
-        lastModifiedSeconds
-        title
-        resumeData {
-            title {
-                ...ResumeTitle
-            }
-            contactItems {
-               ...ContactItem
-            }
-            sections {
-                title
-                contentItems {
-                    ...ResumeContent
-                }
-            }
-            settings {
-                ...ResumeSettings
-            }
-
-        }
+        ...Resume
     }
 }

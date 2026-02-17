@@ -1,0 +1,24 @@
+fragment Resume on Resume {
+    description
+    id
+    lastModifiedSeconds
+    title
+    resumeData {
+        title {
+            ...ResumeTitle
+        }
+        contactItems {
+            ...ContactItem
+        }
+        sections {
+            title
+            contentItems {
+                ...ResumeContent
+            }
+        }
+        settings {
+            ...ResumeSettings
+        }
+
+    }
+}

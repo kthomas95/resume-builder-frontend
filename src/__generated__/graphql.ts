@@ -8,12 +8,6 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-export const ContactItemFragmentDoc = gql`
-    fragment ContactItem on ResumeContactItem {
-  value
-  icon
-}
-    `;
 export const BulletPointsFragmentDoc = gql`
     fragment BulletPoints on BulletPoints {
   columns
@@ -93,16 +87,50 @@ export const SectionItemsFragmentDoc = gql`
   }
 }
     ${ResumeSectionItemFragmentDoc}`;
-export const ResumeSettingsFragmentDoc = gql`
-    fragment ResumeSettings on ResumeSettings {
-  baseFontSize
-}
-    `;
 export const ResumeTitleFragmentDoc = gql`
     fragment ResumeTitle on ResumeTitle {
   name
 }
     `;
+export const ContactItemFragmentDoc = gql`
+    fragment ContactItem on ResumeContactItem {
+  value
+  icon
+}
+    `;
+export const ResumeSettingsFragmentDoc = gql`
+    fragment ResumeSettings on ResumeSettings {
+  baseFontSize
+}
+    `;
+export const ResumeFragmentDoc = gql`
+    fragment Resume on Resume {
+  description
+  id
+  lastModifiedSeconds
+  title
+  resumeData {
+    title {
+      ...ResumeTitle
+    }
+    contactItems {
+      ...ContactItem
+    }
+    sections {
+      title
+      contentItems {
+        ...ResumeContent
+      }
+    }
+    settings {
+      ...ResumeSettings
+    }
+  }
+}
+    ${ResumeTitleFragmentDoc}
+${ContactItemFragmentDoc}
+${ResumeContentFragmentDoc}
+${ResumeSettingsFragmentDoc}`;
 export const AvailableResumeFragmentDoc = gql`
     fragment AvailableResume on AvailableResume {
   title
@@ -134,33 +162,10 @@ export function useGetAvailableResumesSubscription<TData = GetAvailableResumesSu
 export const GetResumeDocument = gql`
     subscription getResume($resumeId: String!) {
   subscribeToResume(resumeId: $resumeId) {
-    description
-    id
-    lastModifiedSeconds
-    title
-    resumeData {
-      title {
-        ...ResumeTitle
-      }
-      contactItems {
-        ...ContactItem
-      }
-      sections {
-        title
-        contentItems {
-          ...ResumeContent
-        }
-      }
-      settings {
-        ...ResumeSettings
-      }
-    }
+    ...Resume
   }
 }
-    ${ResumeTitleFragmentDoc}
-${ContactItemFragmentDoc}
-${ResumeContentFragmentDoc}
-${ResumeSettingsFragmentDoc}`;
+    ${ResumeFragmentDoc}`;
 
 export function useGetResumeSubscription<TData = GetResumeSubscription>(options: Omit<Urql.UseSubscriptionArgs<GetResumeSubscriptionVariables>, 'query'>, handler?: Urql.SubscriptionHandler<GetResumeSubscription, TData>) {
   return Urql.useSubscription<GetResumeSubscription, TData, GetResumeSubscriptionVariables>({ query: GetResumeDocument, ...options }, handler);
@@ -263,6 +268,8 @@ export type ResumeContent_TextContent_Fragment = { __typename: 'TextContent', te
 
 export type ResumeContentFragment = ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment;
 
+export type ResumeFragment = { description: string, id: string, lastModifiedSeconds: string, title: string, resumeData: { title: ResumeTitleFragment, contactItems: Array<ContactItemFragment>, sections: Array<{ title: string, contentItems: Array<ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment> }>, settings: ResumeSettingsFragment } };
+
 export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel?: string | null, rightLabel?: string | null, contentItems: Array<ResumeContent_TextContent_Fragment> };
 
 export type ResumeSettingsFragment = { baseFontSize: number };
@@ -281,7 +288,7 @@ export type GetResumeSubscriptionVariables = Exact<{
 }>;
 
 
-export type GetResumeSubscription = { subscribeToResume: { description: string, id: string, lastModifiedSeconds: string, title: string, resumeData: { title: ResumeTitleFragment, contactItems: Array<ContactItemFragment>, sections: Array<{ title: string, contentItems: Array<ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment> }>, settings: ResumeSettingsFragment } } };
+export type GetResumeSubscription = { subscribeToResume: ResumeFragment };
 
 export type HelloQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
