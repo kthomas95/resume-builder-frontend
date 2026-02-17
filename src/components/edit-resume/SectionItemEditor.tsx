@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Stack, Group, Divider, Paper, ActionIcon } from "@mantine/core";
-import { Trash2 } from "lucide-react";
+import { Stack, Group, Divider, Paper, ActionIcon, Button, Menu } from "@mantine/core";
+import { Trash2, Plus } from "lucide-react";
 import { TextContentEditor } from "./TextContentEditor";
 import { TextField } from "../common/TextField";
-import {SectionItemUpdater} from "../../types";
+import {ResumeContent, ResumeText, SectionItemUpdater} from "../../types";
 import {ResumeContent_SectionItem_Fragment} from "../../__generated__/graphql";
 
 interface SectionItemEditorProps {
@@ -69,6 +69,74 @@ export const SectionItemEditor = ({ item, onUpdate, onRemove,  }: SectionItemEdi
                         />
                     ))}
                 </Stack>
+
+                <Group justify="center" mt="xs">
+                    <Menu shadow="md" width={200} position="bottom-start">
+                        <Menu.Target>
+                            <Button 
+                                variant="subtle" 
+                                size="xs" 
+                                leftSection={<Plus size={14} />}
+                            >
+                                Add Content
+                            </Button>
+                        </Menu.Target>
+
+                        <Menu.Dropdown>
+                            <Menu.Item 
+                                leftSection={<Plus size={14} />}
+                                onClick={() => onUpdate({
+                                    type: SectionItemUpdater.Type.AddContent,
+                                    content: {
+                                        type: ResumeContent.Type.TextContent,
+                                        text: {
+                                            type: ResumeText.Type.Paragraph,
+                                            text: ""
+                                        }
+                                    }
+                                })}
+                            >
+                                Add Paragraph
+                            </Menu.Item>
+
+                            <Menu.Item 
+                                leftSection={<Plus size={14} />}
+                                onClick={() => onUpdate({
+                                    type: SectionItemUpdater.Type.AddContent,
+                                    content: {
+                                        type: ResumeContent.Type.TextContent,
+                                        text: {
+                                            type: ResumeText.Type.BulletPoints,
+                                            items: [""],
+                                            columns: 1
+                                        }
+                                    }
+                                })}
+                            >
+                                Add Bullets
+                            </Menu.Item>
+
+                            <Menu.Item 
+                                leftSection={<Plus size={14} />}
+                                onClick={() => onUpdate({
+                                    type: SectionItemUpdater.Type.AddContent,
+                                    content: {
+                                        type: ResumeContent.Type.TextContent,
+                                        text: {
+                                            type: ResumeText.Type.Columns,
+                                            items: [
+                                                { label: "Column 1", items: [""] },
+                                                { label: "Column 2", items: [""] }
+                                            ]
+                                        }
+                                    }
+                                })}
+                            >
+                                Add Columns
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                </Group>
             </Stack>
         </Paper>
     );

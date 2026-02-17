@@ -1,14 +1,11 @@
 import * as React from "react";
-import { Stack, Title, Group, ActionIcon, Button, Menu, Paper } from "@mantine/core";
-import { Trash2, Plus, GripVertical, MoreHorizontal } from "lucide-react";
+import { ActionIcon, Button, Group, Menu, Paper, Stack, Title } from "@mantine/core";
+import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { SectionItemEditor } from "./SectionItemEditor";
 import { TextContentEditor } from "./TextContentEditor";
-import {ResumeContent, ResumeText, SectionUpdater} from "../../types";
-import {
-    ResumeContent_SectionItem_Fragment, ResumeContent_TextContent_Fragment,
-    ResumeTextFragment,
-    SectionItemsFragment
-} from "../../__generated__/graphql";
+import { ContentUpdater, ResumeContent, ResumeText, SectionUpdater } from "../../types";
+import { ResumeContent_SectionItem_Fragment, ResumeContent_TextContent_Fragment } from "../../__generated__/graphql";
+import Type = ContentUpdater.Type;
 
 interface GenericSectionProps {
     title: string;
@@ -31,11 +28,7 @@ export const GenericSection = ({ title, contentItems, onUpdate, onRemove }: Gene
                                 </ActionIcon>
                             </Menu.Target>
                             <Menu.Dropdown>
-                                <Menu.Item 
-                                    color="red" 
-                                    leftSection={<Trash2 size={14} />}
-                                    onClick={onRemove}
-                                >
+                                <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onRemove}>
                                     Remove Section
                                 </Menu.Item>
                             </Menu.Dropdown>
@@ -50,68 +43,145 @@ export const GenericSection = ({ title, contentItems, onUpdate, onRemove }: Gene
                                 <SectionItemEditor
                                     key={index}
                                     item={content.item}
-                                    onUpdate={(updater) => onUpdate({
-                                        type: SectionUpdater.Type.UpdateContent,
-                                        index,
-                                        updater: {
-                                            type: "me.kthomas.resume.ContentUpdater.UpdateSectionItem",
-                                            updater
-                                        }
-                                    })}
-                                    onRemove={() => onUpdate({
-                                        type: SectionUpdater.Type.RemoveContent,
-                                        index
-                                    })}
+                                    onUpdate={(updater) =>
+                                        onUpdate({
+                                            type: SectionUpdater.Type.UpdateContent,
+                                            index,
+                                            updater: {
+                                                type: Type.UpdateSectionItem,
+                                                updater,
+                                            },
+                                        })
+                                    }
+                                    onRemove={() =>
+                                        onUpdate({
+                                            type: SectionUpdater.Type.RemoveContent,
+                                            index,
+                                        })
+                                    }
                                 />
                             );
                         }
-                        if (content.type === ResumeText.Type.Paragraph) {
+                        if (content.__typename === "TextContent") {
                             return (
                                 <TextContentEditor
                                     key={index}
                                     text={content.text}
-                                    onUpdate={(updater) => onUpdate({
-                                        type: SectionUpdater.Type.UpdateContent,
-                                        index,
-                                        updater
-                                    })}
+                                    onUpdate={(updater) =>
+                                        onUpdate({
+                                            type: SectionUpdater.Type.UpdateContent,
+                                            index,
+                                            updater,
+                                        })
+                                    }
                                 />
                             );
                         }
 
-                        // if (content.type === "") {
-                        // }
-                        return content.__typename ?? "KK"
                         return null;
                     })}
                 </Stack>
 
                 <Group justify="center">
-                    <Button 
-                        variant="light" 
-                        size="sm" 
-                        leftSection={<Plus size={14} />}
-                        onClick={() => onUpdate({
-                            type: SectionUpdater.Type.AddContent,
-                            content: {
-                                type: ResumeContent.Type.SectionItem,
-                                item: {
-                                    leftLabel: "New Item",
-                                    centerLabel: "",
-                                    rightLabel: "",
-                                    contentItems: [{
-                                        text: {
-                                            type: ResumeText.Type.BulletPoints,
-                                            items: [""],
-                                            columns: 1
-                                        }
-                                    }]
+                    <Menu shadow="md" width={200} position="bottom-start">
+                        <Menu.Target>
+                            <Button variant="light" size="sm" leftSection={<Plus size={14} />}>
+                                Add Item
+                            </Button>
+                        </Menu.Target>
+
+                        <Menu.Dropdown>
+                            <Menu.Label>Section Content</Menu.Label>
+                            <Menu.Item
+                                leftSection={<Plus size={14} />}
+                                onClick={() =>
+                                    onUpdate({
+                                        type: SectionUpdater.Type.AddContent,
+                                        content: {
+                                            type: ResumeContent.Type.SectionItem,
+                                            item: {
+                                                leftLabel: "New Item",
+                                                centerLabel: "",
+                                                rightLabel: "",
+                                                contentItems: [
+                                                    {
+                                                        text: {
+                                                            type: ResumeText.Type.BulletPoints,
+                                                            items: [""],
+                                                            columns: 1,
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    })
                                 }
-                            }
-                        })}
-                    >
-                        Add Item
-                    </Button>
+                            >
+                                Add List Item
+                            </Menu.Item>
+
+                            <Menu.Divider />
+                            <Menu.Label>Text Content</Menu.Label>
+
+                            <Menu.Item
+                                leftSection={<Plus size={14} />}
+                                onClick={() =>
+                                    onUpdate({
+                                        type: SectionUpdater.Type.AddContent,
+                                        content: {
+                                            type: ResumeContent.Type.TextContent,
+                                            text: {
+                                                type: ResumeText.Type.Paragraph,
+                                                text: "",
+                                            },
+                                        },
+                                    })
+                                }
+                            >
+                                Add Paragraph
+                            </Menu.Item>
+
+                            <Menu.Item
+                                leftSection={<Plus size={14} />}
+                                onClick={() =>
+                                    onUpdate({
+                                        type: SectionUpdater.Type.AddContent,
+                                        content: {
+                                            type: ResumeContent.Type.TextContent,
+                                            text: {
+                                                type: ResumeText.Type.BulletPoints,
+                                                items: [""],
+                                                columns: 1,
+                                            },
+                                        },
+                                    })
+                                }
+                            >
+                                Add Bullets
+                            </Menu.Item>
+
+                            <Menu.Item
+                                leftSection={<Plus size={14} />}
+                                onClick={() =>
+                                    onUpdate({
+                                        type: SectionUpdater.Type.AddContent,
+                                        content: {
+                                            type: ResumeContent.Type.TextContent,
+                                            text: {
+                                                type: ResumeText.Type.Columns,
+                                                items: [
+                                                    { label: "Column 1", items: [""] },
+                                                    { label: "Column 2", items: [""] },
+                                                ],
+                                            },
+                                        },
+                                    })
+                                }
+                            >
+                                Add Columns
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
                 </Group>
             </Stack>
         </Paper>
