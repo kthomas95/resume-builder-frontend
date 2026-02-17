@@ -1,20 +1,5 @@
 import * as React from "react";
-import {
-    Stack,
-    Divider,
-    Affix,
-    Button,
-    rem,
-    Center,
-    Loader,
-    Container,
-    Group,
-    Title,
-    ActionIcon,
-    Menu,
-    Text,
-} from "@mantine/core";
-import { Download, Plus, Settings, Trash2 } from "lucide-react";
+import { Affix, Center, Divider, Group, Loader, rem, Stack, Text, Title } from "@mantine/core";
 import { useGetResumeSubscription } from "../../__generated__/graphql";
 import { useModifyResume } from "./use-modify-resume";
 import { ResumeContext } from "./resume-context";
@@ -23,7 +8,10 @@ import { ContactItemsEditor } from "./ContactItemsEditor";
 import { GenericSection } from "./section/GenericSection";
 import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
 import { useTitle } from "react-use";
-import { ResumeUpdater, SettingsUpdater } from "../../types";
+import { BuildPdfButton } from "./BuildPdfButton";
+import { AddNewSectionButton } from "./AddNewSectionButton";
+import { ResumeInfoBar } from "./ResumeInfoBar";
+import { EditSummary } from "./EditSummary";
 
 export const ViewAndEditResume = ({ id }: { id: string }) => {
     const [{ data, fetching, error }] = useGetResumeSubscription({ variables: { resumeId: id } });
@@ -56,93 +44,35 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
         );
     }
 
-    const resumeData = resume.resumeData;
-
     return (
         <ResumeContext.Provider value={{ resume, mutate, resumeId: id }}>
             <Stack gap="xl" pb={rem(120)}>
-                <Group justify="space-between" align="flex-start">
-                    <Stack gap={0}>
-                        <Title order={2}>{resume.title}</Title>
-                        <Text c="dimmed">{resume.description}</Text>
-                    </Stack>
-                    <Group>
-                        <Button
-                            component="a"
-                            href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
-                            target="_blank"
-                            variant="filled"
-                            leftSection={<Download size={20} />}
-                        >
-                            Preview PDF
-                        </Button>
-                    </Group>
-                </Group>
+                <ResumeInfoBar />
 
                 <Divider />
 
                 <ResumeTitleEditor />
 
-                <ContactItemsEditor items={resumeData.contactItems} onUpdate={mutate} />
+                <ContactItemsEditor />
 
-                <ResumeSettingsEditor />
+                <EditSummary />
 
                 <Divider label="Sections" labelPosition="center" />
 
                 <Stack gap="lg">
-                    {resumeData.sections.map((section, index) => (
-                        <GenericSection
-                            key={index}
-                            title={section.title}
-                            contentItems={section.contentItems}
-                            onUpdate={(updater) =>
-                                mutate({
-                                    type: ResumeUpdater.Type.UpdateSection,
-                                    index,
-                                    updater,
-                                })
-                            }
-                            onRemove={() =>
-                                mutate({
-                                    type: ResumeUpdater.Type.RemoveSection,
-                                    index,
-                                })
-                            }
-                        />
+                    {resume.resumeData.sections.map((section, index) => (
+                        <GenericSection key={index} section={section} index={index} />
                     ))}
                 </Stack>
 
                 <Group justify="center" py="xl">
-                    <Button
-                        size="md"
-                        variant="outline"
-                        leftSection={<Plus size={20} />}
-                        onClick={() =>
-                            mutate({
-                                type: ResumeUpdater.Type.AddSection,
-                                section: {
-                                    title: "New Section",
-                                    contentItems: [],
-                                },
-                            })
-                        }
-                    >
-                        Add New Section
-                    </Button>
+                    <AddNewSectionButton />
                 </Group>
 
+                <ResumeSettingsEditor />
+
                 <Affix position={{ bottom: 40, right: 40 }}>
-                    <Button
-                        component="a"
-                        href={`${import.meta.env.VITE_BUILD_RESUME_URL}${id}`}
-                        target="_blank"
-                        size="lg"
-                        radius="xl"
-                        leftSection={<Download size={20} />}
-                        style={{ boxShadow: "var(--mantine-shadow-xl)" }}
-                    >
-                        Build PDF
-                    </Button>
+                    <BuildPdfButton id={id} />
                 </Affix>
             </Stack>
         </ResumeContext.Provider>

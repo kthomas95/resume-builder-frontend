@@ -3,18 +3,37 @@ import { ActionIcon, Button, Group, Menu, Paper, Stack, Title } from "@mantine/c
 import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { SectionItemEditor } from "./SectionItemEditor";
 import { TextContentEditor } from "../text-content/TextContentEditor";
-import { ContentUpdater, ResumeContent, ResumeText, SectionUpdater } from "../../../types";
-import { ResumeContent_SectionItem_Fragment, ResumeContent_TextContent_Fragment } from "../../../__generated__/graphql";
+import { ContentUpdater, ResumeContent, ResumeText, ResumeUpdater, SectionUpdater } from "../../../types";
+import {
+    ResumeContent_SectionItem_Fragment,
+    ResumeContent_TextContent_Fragment,
+    ResumeSectionFragment,
+} from "../../../__generated__/graphql";
 import Type = ContentUpdater.Type;
+import { useResume } from "../resume-context";
 
 interface GenericSectionProps {
-    title: string;
-    contentItems: (ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment)[];
-    onUpdate: (updater: SectionUpdater) => void;
-    onRemove: () => void;
+    section: ResumeSectionFragment;
+    index: number;
 }
 
-export const GenericSection = ({ title, contentItems, onUpdate, onRemove }: GenericSectionProps) => {
+export const GenericSection = ({ section, index }: GenericSectionProps) => {
+    const { title, contentItems } = section;
+    const { mutate } = useResume();
+
+    const onUpdate = (updater: SectionUpdater) =>
+        mutate({
+            type: ResumeUpdater.Type.UpdateSection,
+            index,
+            updater,
+        });
+
+    const onRemove = () =>
+        mutate({
+            type: ResumeUpdater.Type.RemoveSection,
+            index,
+        });
+
     return (
         <Paper p="md" withBorder radius="md">
             <Stack gap="md">

@@ -3,6 +3,7 @@ import { ActionIcon, Button, Group, Paper, Select, Stack, Title } from "@mantine
 import { Github, Globe, Linkedin, Mail, Phone, Plus, Trash2 } from "lucide-react";
 import { ResumeContactIcon, ResumeUpdater } from "../../types";
 import { TextField } from "../common/TextField";
+import { useResume } from "./resume-context";
 
 interface ContactItemsEditorProps {
     items: any[];
@@ -10,14 +11,17 @@ interface ContactItemsEditorProps {
 }
 
 const IconMap: Record<ResumeContactIcon, React.ReactNode> = {
-    [ResumeContactIcon.EMAIL]: <Mail size={16} />,
-    [ResumeContactIcon.PHONE]: <Phone size={16} />,
-    [ResumeContactIcon.WEBSITE]: <Globe size={16} />,
-    [ResumeContactIcon.GITHUB]: <Github size={16} />,
-    [ResumeContactIcon.LINKEDIN]: <Linkedin size={16} />,
+    [ResumeContactIcon.Email]: <Mail size={16} />,
+    [ResumeContactIcon.Phone]: <Phone size={16} />,
+    [ResumeContactIcon.Website]: <Globe size={16} />,
+    [ResumeContactIcon.Github]: <Github size={16} />,
+    [ResumeContactIcon.LinkedIn]: <Linkedin size={16} />,
 };
 
-export const ContactItemsEditor = ({ items, onUpdate }: ContactItemsEditorProps) => {
+export const ContactItemsEditor = () => {
+    const { resume, mutate } = useResume();
+    const items = resume.resumeData.contactItems;
+
     return (
         <Paper p="md" withBorder radius="md">
             <Stack gap="md">
@@ -30,13 +34,13 @@ export const ContactItemsEditor = ({ items, onUpdate }: ContactItemsEditorProps)
                                 data={Object.values(ResumeContactIcon)}
                                 value={item.icon}
                                 onChange={(val) =>
-                                    onUpdate({
+                                    mutate({
                                         type: ResumeUpdater.Type.UpdateContactItem,
                                         index,
                                         item: { ...item, icon: val as ResumeContactIcon },
                                     })
                                 }
-                                leftSection={IconMap[item.icon as ResumeContactIcon]}
+                                leftSection={IconMap[item.icon]}
                                 style={{ width: 150 }}
                             />
                             <TextField
@@ -44,10 +48,13 @@ export const ContactItemsEditor = ({ items, onUpdate }: ContactItemsEditorProps)
                                 placeholder="e.g., john@example.com"
                                 initialValue={item.value}
                                 commitChange={(val) =>
-                                    onUpdate({
+                                    mutate({
                                         type: ResumeUpdater.Type.UpdateContactItem,
                                         index,
-                                        item: { ...item, value: val },
+                                        item: {
+                                            icon: item.icon,
+                                            value: val,
+                                        },
                                     })
                                 }
                                 style={{ flex: 1 }}
@@ -57,7 +64,7 @@ export const ContactItemsEditor = ({ items, onUpdate }: ContactItemsEditorProps)
                                 variant="subtle"
                                 size="lg"
                                 onClick={() =>
-                                    onUpdate({
+                                    mutate({
                                         type: ResumeUpdater.Type.RemoveContactItem,
                                         index,
                                     })
@@ -73,10 +80,10 @@ export const ContactItemsEditor = ({ items, onUpdate }: ContactItemsEditorProps)
                     size="sm"
                     leftSection={<Plus size={14} />}
                     onClick={() =>
-                        onUpdate({
+                        mutate({
                             type: ResumeUpdater.Type.AddContactItem,
                             item: {
-                                icon: ResumeContactIcon.EMAIL,
+                                icon: ResumeContactIcon.Email,
                                 value: "",
                             },
                         })

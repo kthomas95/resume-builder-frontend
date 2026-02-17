@@ -92,12 +92,25 @@ export const ResumeTitleFragmentDoc = gql`
   name
 }
     `;
+export const ResumeSummaryFragmentDoc = gql`
+    fragment ResumeSummary on ResumeSummary {
+  text
+}
+    `;
 export const ContactItemFragmentDoc = gql`
     fragment ContactItem on ResumeContactItem {
   value
   icon
 }
     `;
+export const ResumeSectionFragmentDoc = gql`
+    fragment ResumeSection on ResumeSection {
+  title
+  contentItems {
+    ...ResumeContent
+  }
+}
+    ${ResumeContentFragmentDoc}`;
 export const ResumeSettingsFragmentDoc = gql`
     fragment ResumeSettings on ResumeSettings {
   baseFontSize
@@ -113,14 +126,14 @@ export const ResumeFragmentDoc = gql`
     title {
       ...ResumeTitle
     }
+    summary {
+      ...ResumeSummary
+    }
     contactItems {
       ...ContactItem
     }
     sections {
-      title
-      contentItems {
-        ...ResumeContent
-      }
+      ...ResumeSection
     }
     settings {
       ...ResumeSettings
@@ -128,8 +141,9 @@ export const ResumeFragmentDoc = gql`
   }
 }
     ${ResumeTitleFragmentDoc}
+${ResumeSummaryFragmentDoc}
 ${ContactItemFragmentDoc}
-${ResumeContentFragmentDoc}
+${ResumeSectionFragmentDoc}
 ${ResumeSettingsFragmentDoc}`;
 export const AvailableResumeFragmentDoc = gql`
     fragment AvailableResume on AvailableResume {
@@ -268,11 +282,15 @@ export type ResumeContent_TextContent_Fragment = { __typename: 'TextContent', te
 
 export type ResumeContentFragment = ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment;
 
-export type ResumeFragment = { description: string, id: string, lastModifiedSeconds: string, title: string, resumeData: { title: ResumeTitleFragment, contactItems: Array<ContactItemFragment>, sections: Array<{ title: string, contentItems: Array<ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment> }>, settings: ResumeSettingsFragment } };
+export type ResumeFragment = { description: string, id: string, lastModifiedSeconds: string, title: string, resumeData: { title: ResumeTitleFragment, summary: ResumeSummaryFragment, contactItems: Array<ContactItemFragment>, sections: Array<ResumeSectionFragment>, settings: ResumeSettingsFragment } };
 
 export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel?: string | null, rightLabel?: string | null, contentItems: Array<ResumeContent_TextContent_Fragment> };
 
+export type ResumeSectionFragment = { title: string, contentItems: Array<ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment> };
+
 export type ResumeSettingsFragment = { baseFontSize: number };
+
+export type ResumeSummaryFragment = { text: string };
 
 export type ResumeTitleFragment = { name: string };
 
@@ -288,7 +306,7 @@ export type GetResumeSubscriptionVariables = Exact<{
 }>;
 
 
-export type GetResumeSubscription = { subscribeToResume: ResumeFragment };
+export type GetResumeSubscription = { subscribeToResume?: ResumeFragment | null };
 
 export type HelloQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -418,6 +436,7 @@ export interface Paragraph {
 
 export interface Query {
   me?: Maybe<HelloResponse>;
+  typstVersion?: Maybe<Scalars['String']['output']>;
 }
 
 export interface Resume {
@@ -429,11 +448,11 @@ export interface Resume {
 }
 
 export enum ResumeContactIcon {
-  Email = 'EMAIL',
-  Github = 'GITHUB',
-  Linkedin = 'LINKEDIN',
-  Phone = 'PHONE',
-  Website = 'WEBSITE'
+  Email = 'Email',
+  Github = 'Github',
+  LinkedIn = 'LinkedIn',
+  Phone = 'Phone',
+  Website = 'Website'
 }
 
 export interface ResumeContactItem {
@@ -447,6 +466,7 @@ export interface ResumeData {
   contactItems: Array<ResumeContactItem>;
   sections: Array<ResumeSection>;
   settings: ResumeSettings;
+  summary: ResumeSummary;
   title: ResumeTitle;
 }
 
@@ -466,6 +486,10 @@ export interface ResumeSettings {
   baseFontSize: Scalars['Int']['output'];
 }
 
+export interface ResumeSummary {
+  text: Scalars['String']['output'];
+}
+
 export type ResumeText = BulletPoints | Columns | Paragraph;
 
 export interface ResumeTitle {
@@ -477,7 +501,7 @@ export interface SectionItem {
 }
 
 export interface Subscription {
-  subscribeToResume: Resume;
+  subscribeToResume?: Maybe<Resume>;
   viewAvailableResumes: Array<AvailableResume>;
 }
 

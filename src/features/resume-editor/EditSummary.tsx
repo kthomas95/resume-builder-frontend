@@ -1,23 +1,15 @@
 import { useContext } from "react";
-import { resumeContext } from "./resume-context";
-import { useGetSummariesSubscription, useImportSummaryMutation } from "../../__generated__/graphql";
-import { 
-    Stack, 
-    Group, 
-    Title, 
-    Button, 
-    Menu, 
-    Text,
-    rem
-} from "@mantine/core";
+import { useResume } from "./resume-context";
+import { Button, Group, Menu, Stack, Textarea, Title } from "@mantine/core";
 import { Download, FileText } from "lucide-react";
-import { TextField } from "../common/TextField";
+import { TextField, useTextFieldValue } from "../common/TextField";
+import { ResumeUpdater } from "../../types";
+import Type = ResumeUpdater.Type;
 
 const ImportSummary = () => {
-    const summaries = useGetSummariesSubscription()[0]?.data?.getSummaries ?? [];
-    const resumeId = useContext(resumeContext).id;
-    const [, importSummary] = useImportSummaryMutation();
-    
+    const resumeId = useResume().resumeId;
+    // const [, importSummary] = useImportSummaryMutation();
+
     return (
         <Menu shadow="md" width={250} position="bottom-end">
             <Menu.Target>
@@ -27,29 +19,34 @@ const ImportSummary = () => {
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Label>Summary Library</Menu.Label>
-                {summaries.map((summary) => (
-                    <Menu.Item
-                        key={summary.id}
-                        onClick={() => {
-                            importSummary({ resumeId, summaryId: summary.id });
-                        }}
-                    >
-                        {summary.description}
-                    </Menu.Item>
-                ))}
-                {summaries.length === 0 && (
-                    <Menu.Item disabled>No saved summaries found</Menu.Item>
-                )}
+                {/*{summaries.map((summary) => (*/}
+                {/*    <Menu.Item*/}
+                {/*        key={summary.id}*/}
+                {/*        onClick={() => {*/}
+                {/*            importSummary({ resumeId, summaryId: summary.id });*/}
+                {/*        }}*/}
+                {/*    >*/}
+                {/*        {summary.description}*/}
+                {/*    </Menu.Item>*/}
+                {/*))}*/}
+                {/*{summaries.length === 0 && <Menu.Item disabled>No saved summaries found</Menu.Item>}*/}
             </Menu.Dropdown>
         </Menu>
     );
 };
 
 export const EditSummary = () => {
-    const { summary, updateResume } = useContext(resumeContext);
+    const { mutate, resume } = useResume();
+
+    const { inputProps, isUpdated } = useTextFieldValue(resume.resumeData.summary.text, 1000, (value) =>
+        mutate({
+            type: Type.UpdateSummary,
+            newSummary: value,
+        }),
+    );
 
     return (
-        <Stack gap="xs" maw={1000} mx="auto" w="100%">
+        <Stack gap="xs">
             <Group justify="space-between" align="center">
                 <Group gap="xs">
                     <FileText size={20} color="var(--mantine-color-blue-6)" />
@@ -57,12 +54,12 @@ export const EditSummary = () => {
                 </Group>
                 <ImportSummary />
             </Group>
-            
-            <TextField
+
+            <Textarea
+                minRows={4}
+                autosize={true}
                 placeholder="Briefly describe your professional background and key strengths..."
-                initialValue={summary}
-                commitChange={(val) => updateResume({ summary: val })}
-                asTextArea={true}
+                {...inputProps}
             />
         </Stack>
     );

@@ -1,0 +1,3 @@
+fragment ResumeSummary on ResumeSummary {
+    text
+}

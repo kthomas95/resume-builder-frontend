@@ -6,3 +6,10 @@ fragment ResumeSectionItem on ResumeSectionItem {
         ...ResumeContent
     }
 }
+
+fragment ResumeSection on ResumeSection {
+    title
+    contentItems {
+        ...ResumeContent
+    }
+}

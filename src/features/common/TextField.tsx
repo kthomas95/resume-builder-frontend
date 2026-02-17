@@ -1,5 +1,7 @@
-import { ChangeEvent, CSSProperties, useEffect, useState } from "react";
-import { TextInput, Textarea } from "@mantine/core";
+import { ChangeEvent, CSSProperties, InputHTMLAttributes, useEffect, useState } from "react";
+import { TextInput, Textarea, InputVariant } from "@mantine/core";
+import { useDebounce } from "react-use";
+import { useDebouncedValue } from "@mantine/hooks";
 
 export interface TextFieldProps {
     className?: string;
@@ -13,22 +15,47 @@ export interface TextFieldProps {
     style?: CSSProperties;
     size?: string;
     fw?: number | string;
-    variant?: string;
+    variant?: InputVariant;
     styles?: any;
 }
 
-export const useTextFieldValue = (initialValue?: string) => {
-    const [value, setValue] = useState(initialValue ?? "");
+export interface UseTextFieldValueResult {
+    inputProps: Pick<InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>, "value" | "onChange" | "onBlur">;
+    isUpdated: boolean;
+}
+
+export const useTextFieldValue = (
+    serverValue: string,
+    delay: number,
+    commitChange: (value: string) => void,
+): UseTextFieldValueResult => {
+    const [value, setValue] = useState(serverValue);
+
+    const [debouncedLocalValue] = useDebouncedValue(value, delay);
+
     useEffect(() => {
-        setValue(initialValue ?? "");
-    }, [initialValue]);
+        if (serverValue !== value) {
+            commitChange(value);
+        }
+    }, [debouncedLocalValue]);
+
+    useEffect(() => {
+        setValue(serverValue);
+    }, [serverValue]);
 
     return {
-        onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(e.currentTarget.value),
-        value,
+        inputProps: {
+            onChange: (e) => setValue(e.currentTarget.value),
+            value,
+            onBlur: () => commitChange(value),
+        },
+        isUpdated: serverValue === value,
     };
 };
 
+/**
+ * @deprecated Use regular input components with [[useTextFieldValue]]
+ */
 export const TextField = ({
     commitChange,
     initialValue,
@@ -43,7 +70,7 @@ export const TextField = ({
     variant,
     styles,
 }: TextFieldProps) => {
-    const inputStateProps = useTextFieldValue(initialValue);
+    const { inputProps } = useTextFieldValue(initialValue, 500, commitChange);
 
     if (asTextArea) {
         return (
@@ -51,8 +78,7 @@ export const TextField = ({
                 id={id}
                 label={label}
                 placeholder={placeholder}
-                onBlur={() => commitChange(inputStateProps.value)}
-                {...inputStateProps}
+                {...inputProps}
                 variant={variant ?? "filled"}
                 radius="md"
                 autosize
@@ -71,8 +97,7 @@ export const TextField = ({
             id={id}
             label={label}
             placeholder={placeholder}
-            onBlur={() => commitChange(inputStateProps.value)}
-            {...inputStateProps}
+            {...inputProps}
             variant={variant ?? "filled"}
             radius="md"
             style={style}

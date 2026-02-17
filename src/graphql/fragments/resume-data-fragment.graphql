@@ -7,14 +7,14 @@ fragment Resume on Resume {
         title {
             ...ResumeTitle
         }
+        summary {
+            ...ResumeSummary
+        }
         contactItems {
             ...ContactItem
         }
         sections {
-            title
-            contentItems {
-                ...ResumeContent
-            }
+            ...ResumeSection
         }
         settings {
             ...ResumeSettings
