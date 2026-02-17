@@ -1,0 +1,4 @@
+fragment ContactItem on ResumeContactItem {
+    value
+    icon
+}

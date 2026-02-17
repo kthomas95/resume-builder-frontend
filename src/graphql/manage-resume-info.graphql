@@ -1,3 +1,0 @@
-#mutation ManageResumeInfo($id: String!, $request: UpdateResumeInfoInput!) {
-#    updateResumeInfo(id: $id, request: $request)
-#}

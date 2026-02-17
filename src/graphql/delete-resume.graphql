@@ -1,3 +1,4 @@
-#mutation DeleteResume($resumeId: UUID!) {
+
+#mutation DeleteResume($resumeId: String) {
 #    deleteResume(resumeId: $resumeId)
 #}

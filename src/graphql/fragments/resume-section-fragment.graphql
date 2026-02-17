@@ -1,0 +1,8 @@
+fragment ResumeSectionItem on ResumeSectionItem {
+    centerLabel
+    leftLabel
+    rightLabel
+    contentItems {
+        ...ResumeContent
+    }
+}

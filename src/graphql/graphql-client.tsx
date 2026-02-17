@@ -12,7 +12,7 @@ const useClient = () => {
 
         const wsClient = createWSClient({
             // url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
-            url: "http://localhost:8090/subscriptions",
+            url: "https://resume-api.kthomas.me/subscriptions",
             connectionParams: {
                 headers,
             },

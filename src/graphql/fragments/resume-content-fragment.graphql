@@ -1,0 +1,62 @@
+fragment BulletPoints on BulletPoints {
+    columns
+    bulletItems: items
+}
+
+fragment ColumnItem on ColumnItem {
+    items
+    label
+}
+
+fragment Columns on Columns {
+    columnItems: items {
+        ...ColumnItem
+    }
+}
+
+fragment Paragraph on Paragraph {
+    text
+}
+
+fragment SectionItems on SectionItem {
+    item {
+        ...ResumeSectionItem
+    }
+}
+
+fragment ResumeText on ResumeText {
+    ... on BulletPoints {
+        ...BulletPoints
+    }
+
+    ... on Columns {
+        ...Columns
+    }
+
+    ... on Paragraph {
+        ...Paragraph
+    }
+}
+
+fragment ResumeContent on ResumeContent {
+    __typename
+
+    ... on TextContent {
+        text {
+            ...ResumeText
+        }
+    }
+
+    ... on SectionItem {
+        item {
+            rightLabel
+            leftLabel
+            centerLabel
+            contentItems {
+                text {
+                    ...ResumeText
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,3 @@
+fragment ResumeTitle on ResumeTitle {
+    name
+}

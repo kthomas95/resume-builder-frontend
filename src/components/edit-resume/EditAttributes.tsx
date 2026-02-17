@@ -1,4 +1,3 @@
-import { AttributeType } from "../../graphql/graphql-types";
 import { resumeContext } from "./resume-context";
 import { useContext } from "react";
 import { Mail, Phone, Home } from "lucide-react";

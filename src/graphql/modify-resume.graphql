@@ -1,0 +1,3 @@
+mutation ModifyResume($id: String!, $requestString: String!) {
+    mutateResume(id: $id, requestString: $requestString)
+}
