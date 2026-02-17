@@ -2,6 +2,7 @@ import { useResume } from "./resume-context";
 import { Button, Group, Stack, Text, Title } from "@mantine/core";
 import { Download } from "lucide-react";
 import * as React from "react";
+import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
 
 export const ResumeInfoBar = () => {
     const { resume } = useResume();
@@ -14,6 +15,7 @@ export const ResumeInfoBar = () => {
                 <Text c="dimmed">{resume.description !== "" ? resume.description : "No Description"}</Text>
             </Stack>
             <Group>
+                <ResumeSettingsEditor />
                 <Button
                     component="a"
                     href={`${import.meta.env.VITE_BUILD_RESUME_URL}${resume.id}`}

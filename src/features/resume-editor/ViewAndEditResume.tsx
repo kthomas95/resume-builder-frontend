@@ -69,8 +69,6 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                     <AddNewSectionButton />
                 </Group>
 
-                <ResumeSettingsEditor />
-
                 <Affix position={{ bottom: 40, right: 40 }}>
                     <BuildPdfButton id={id} />
                 </Affix>
