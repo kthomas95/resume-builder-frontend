@@ -18,7 +18,7 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
     const mutate = useModifyResume(id);
 
     const resume = data?.subscribeToResume;
-    useTitle(resume?.title || "Loading Resume");
+    useTitle(`> ${resume?.title}` || "Loading Resume");
 
     if (fetching) {
         return (
@@ -46,7 +46,7 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
 
     return (
         <ResumeContext.Provider value={{ resume, mutate, resumeId: id }}>
-            <Stack gap="xl" pb={rem(120)}>
+            <Stack gap="xl" style={{ "--font-resume-heading": "Merriweather" }}>
                 <ResumeInfoBar />
 
                 <Divider />
@@ -68,10 +68,6 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                 <Group justify="center" py="xl">
                     <AddNewSectionButton />
                 </Group>
-
-                <Affix position={{ bottom: 40, right: 40 }}>
-                    <BuildPdfButton id={id} />
-                </Affix>
             </Stack>
         </ResumeContext.Provider>
     );

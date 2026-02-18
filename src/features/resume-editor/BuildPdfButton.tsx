@@ -8,10 +8,10 @@ export const BuildPdfButton = (props: { id: string }) => {
             component="a"
             href={`${import.meta.env.VITE_BUILD_RESUME_URL}${props.id}`}
             target="_blank"
-            size="lg"
-            radius="xl"
+            // size="lg"
+            // radius="xl"
             leftSection={<Download size={20} />}
-            style={{ boxShadow: "var(--mantine-shadow-xl)" }}
+            // style={{ boxShadow: "var(--mantine-shadow-xl)" }}
         >
             Build PDF
         </Button>

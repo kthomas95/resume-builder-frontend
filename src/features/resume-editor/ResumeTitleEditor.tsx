@@ -1,24 +1,36 @@
 import * as React from "react";
-import { Paper, Title, Stack } from "@mantine/core";
-import { TextField } from "../common/TextField";
+import { TextInput } from "@mantine/core";
+import { useTextFieldValue } from "../common/TextField";
 import { useResume } from "./resume-context";
 import { ResumeUpdater } from "../../types";
 
 export const ResumeTitleEditor = () => {
     const { mutate, resume } = useResume();
 
+    const { inputProps } = useTextFieldValue(resume.resumeData.title.name, 1000, (newName) => {
+        mutate({
+            type: ResumeUpdater.Type.UpdateName,
+            newName,
+        });
+    });
+
     return (
-        <TextField
+        <TextInput
             placeholder="Your Full Name"
-            initialValue={resume.resumeData.title.name}
-            commitChange={(newName) => {
-                mutate({
-                    type: ResumeUpdater.Type.UpdateName,
-                    newName,
-                });
-            }}
+            {...inputProps}
             variant={"unstyled"}
-            size="xl"
+            // color={"red"}
+            styles={{
+                input: {
+                    fontSize: "48px",
+                    fontFamily: "var(--font-resume-heading)",
+                    color: "var(--mantine-color-gray-9)",
+                    textAlign: "center",
+                    fontWeight: 900,
+                    height: "auto",
+                    // fontVariant: "italic",
+                },
+            }}
             fw={700}
         />
     );

@@ -4,14 +4,29 @@ import { GraphQLProvider } from "../graphql/graphql-client";
 import { UserManagement } from "../features/auth/UserManagement";
 import { UserAtom } from "../atoms/UserAtom";
 import { useAtomValue } from "jotai/react";
-import { MantineProvider, createTheme, AppShell, Group, Button, Menu, Text, Container, Title } from "@mantine/core";
+import {
+    MantineProvider,
+    createTheme,
+    AppShell,
+    Group,
+    Button,
+    Menu,
+    Text,
+    Container,
+    Title,
+    Anchor,
+} from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ChevronDown, FileText, GraduationCap, Briefcase, Layout } from "lucide-react";
 import "../index.css";
+import "@fontsource-variable/merriweather-sans";
 
 const theme = createTheme({
     primaryColor: "blue",
-    fontFamily: "Inter, sans-serif",
+    // fontFamily: "Merriweather Sans Variable",
+    // headings: {
+    //     fontFamily: "Merriweather Variable",
+    // },
 });
 
 export const Route = createRootRoute({
@@ -29,9 +44,11 @@ function RootComponent() {
                     <AppShell.Header px="xl">
                         <Group h="100%" justify="space-between">
                             <Group>
-                                <Title order={3} c="blue" style={{ letterSpacing: "-0.5px" }}>
-                                    RESUME BUILDER
-                                </Title>
+                                <Anchor component={Link} to={"/"}>
+                                    <Title order={3} c="blue" style={{ letterSpacing: "-0.5px" }}>
+                                        Your Resumes
+                                    </Title>
+                                </Anchor>
 
                                 <Group ml="xl" gap="md" visibleFrom="sm">
                                     <Button variant="subtle" component={Link} to="/">

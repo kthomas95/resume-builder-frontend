@@ -3,6 +3,7 @@ import { Button, Group, Stack, Text, Title } from "@mantine/core";
 import { Download } from "lucide-react";
 import * as React from "react";
 import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
+import { BuildPdfButton } from "./BuildPdfButton";
 
 export const ResumeInfoBar = () => {
     const { resume } = useResume();
@@ -16,15 +17,7 @@ export const ResumeInfoBar = () => {
             </Stack>
             <Group>
                 <ResumeSettingsEditor />
-                <Button
-                    component="a"
-                    href={`${import.meta.env.VITE_BUILD_RESUME_URL}${resume.id}`}
-                    target="_blank"
-                    variant="filled"
-                    leftSection={<Download size={20} />}
-                >
-                    Preview PDF
-                </Button>
+                <BuildPdfButton id={resume.id} />
             </Group>
         </Group>
     );
