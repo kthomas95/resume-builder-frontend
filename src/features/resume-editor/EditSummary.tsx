@@ -14,7 +14,7 @@ const ImportSummary = () => {
         <Menu shadow="md" width={250} position="bottom-end">
             <Menu.Target>
                 <Button variant="subtle" size="xs" leftSection={<Download size={14} />}>
-                    Import from Library
+                    Import
                 </Button>
             </Menu.Target>
             <Menu.Dropdown>
@@ -49,8 +49,9 @@ export const EditSummary = () => {
         <Stack gap="xs">
             <Group justify="space-between" align="center">
                 <Group gap="xs">
-                    <FileText size={20} color="var(--mantine-color-blue-6)" />
-                    <Title order={4}>Professional Summary</Title>
+                    <Title order={4} ff={"var(--font-resume-heading)"} fw={900}>
+                        Summary
+                    </Title>
                 </Group>
                 <ImportSummary />
             </Group>
@@ -58,6 +59,8 @@ export const EditSummary = () => {
             <Textarea
                 minRows={4}
                 autosize={true}
+                variant={"filled"}
+                styles={{ input: { fontFamily: "var(--font-resume)", fontWeight: 300, fontSize: "10pt" } }}
                 placeholder="Briefly describe your professional background and key strengths..."
                 {...inputProps}
             />

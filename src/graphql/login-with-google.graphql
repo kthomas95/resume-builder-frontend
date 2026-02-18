@@ -4,3 +4,7 @@ mutation LoginWithGoogle($token: String!) {
         success
     }
 }
+
+mutation LogoutWithGoogle {
+    logout
+}

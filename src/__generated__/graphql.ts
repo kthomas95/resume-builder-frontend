@@ -210,6 +210,15 @@ export const LoginWithGoogleDocument = gql`
 export function useLoginWithGoogleMutation() {
   return Urql.useMutation<LoginWithGoogleMutation, LoginWithGoogleMutationVariables>(LoginWithGoogleDocument);
 };
+export const LogoutWithGoogleDocument = gql`
+    mutation LogoutWithGoogle {
+  logout
+}
+    `;
+
+export function useLogoutWithGoogleMutation() {
+  return Urql.useMutation<LogoutWithGoogleMutation, LogoutWithGoogleMutationVariables>(LogoutWithGoogleDocument);
+};
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
@@ -319,6 +328,11 @@ export type LoginWithGoogleMutationVariables = Exact<{
 
 
 export type LoginWithGoogleMutation = { loginWithGoogle: { message?: string | null, success: boolean } };
+
+export type LogoutWithGoogleMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutWithGoogleMutation = { logout: boolean };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String']['input'];

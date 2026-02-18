@@ -6,6 +6,7 @@ import { UserAtom } from "../atoms/UserAtom";
 
 const wsClient = createWSClient({
     url: import.meta.env.VITE_WS_URL ?? "wss://resume-api.kthomas.me/subscriptions",
+    keepAlive: 1_000,
 });
 
 const graphQlClient = new Client({

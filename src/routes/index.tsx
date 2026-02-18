@@ -20,7 +20,7 @@ function HomeComponent() {
 
     if (!user) {
         return (
-            <Container size="md" py={80}>
+            <Container size="md">
                 <Stack align="center" gap="xl" ta="center">
                     <Box>
                         <Title order={1} size={56} style={{ fontWeight: 900 }}>
@@ -37,16 +37,13 @@ function HomeComponent() {
                             resume.
                         </Title>
                         <Text size="xl" c="dimmed" mt="md" maw={600} mx="auto">
-                            Create professional, job-winning resumes in minutes with our Typst-powered builder.
+                            Create professional, job-winning resumes in minutes.
                         </Text>
                     </Box>
 
                     <Group gap="md">
                         <Button size="xl" radius="md" leftSection={<Rocket size={20} />}>
                             Get Started
-                        </Button>
-                        <Button size="xl" radius="md" variant="default">
-                            View Templates
                         </Button>
                     </Group>
                 </Stack>

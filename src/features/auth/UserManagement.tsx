@@ -1,42 +1,46 @@
 import { useAtom } from "jotai/react";
 import { UserAtom } from "../../atoms/UserAtom";
-import { User as UserIcon, LogOut, Settings } from "lucide-react";
+import { User as UserIcon, LogOut, Settings, LogIn } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button, Modal, Group, Avatar, Menu, Text, UnstyledButton, Divider, Stack, Box } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { CredentialResponse, GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { gql, useMutation } from "urql";
-import { useHelloQueryQuery, useLoginWithGoogleMutation } from "../../__generated__/graphql";
+import {
+    useHelloQueryQuery,
+    useLoginWithGoogleMutation,
+    useLogoutWithGoogleMutation,
+} from "../../__generated__/graphql";
 import { useEffect } from "react";
 import { Maybe } from "purify-ts";
 import { first, hasAtLeast, join, map, split, toUpperCase, truncate } from "remeda";
 
 export const UserManagement = () => {
     const [currentUser, setCurrentUser] = useAtom(UserAtom);
-    const [opened, { open, close }] = useDisclosure(false);
+    const [_, logout] = useLogoutWithGoogleMutation();
     const navigate = useNavigate();
 
-    const me = useHelloQueryQuery()[0].data?.me;
+    const [{ data }, refetchMe] = useHelloQueryQuery();
+    const me = data?.me;
 
     useEffect(() => {
+        console.log("Me changed", me);
         if (me) {
-            setCurrentUser((prev) =>
-                prev
-                    ? {
-                          username: prev.username,
-                          token: prev.token,
-                          photoUrl: me.photoUrl,
-                          name: me.name,
-                      }
-                    : null,
-            );
+            setCurrentUser((prev) => ({
+                username: me.userId.toString(),
+                token: me.userId.toString(),
+                photoUrl: me.photoUrl,
+                name: me.name,
+            }));
         }
     }, [me]);
 
     const [, loginWithGoogleMutation] = useLoginWithGoogleMutation();
 
     const logoutUser = () => {
+        logout({});
         setCurrentUser(null);
+        // .then(refetchMe);
         // We could also call a logout mutation if we want to clear the session cookie on backend
         navigate({ to: "/" });
     };
@@ -50,16 +54,12 @@ export const UserManagement = () => {
         console.log(result);
 
         if (result.data?.loginWithGoogle?.success) {
-            // After successful login, we could fetch user info or just set a placeholder
-            // Since we use sessions, the backend knows who we are.
-            // For the sake of the current UI, let's set a minimal user object
             console.log("Success Login", result.data?.loginWithGoogle);
             setCurrentUser({
-                username: "Google User", // Ideally fetch this
+                username: "Google User",
                 token: "SESSION_MANAGED",
             });
-            close();
-            window.location.reload(); // Reload to ensure all features see the session
+            refetchMe({ requestPolicy: "network-only" });
         } else {
             console.error("Login failed:", result);
         }
@@ -85,59 +85,18 @@ export const UserManagement = () => {
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                    <Menu.Label>Application</Menu.Label>
-                    <Menu.Item leftSection={<UserIcon size={14} />}>Profile: {currentUser.username}</Menu.Item>
-                    <Menu.Item leftSection={<Settings size={14} />}>Settings</Menu.Item>
+                    <Menu.Label>{currentUser.name}</Menu.Label>
+                    {/*<Menu.Item leftSection={<Settings size={14} />}>Settings</Menu.Item>*/}
 
-                    <Menu.Divider />
+                    {/*<Menu.Divider />*/}
 
                     <Menu.Item color="red" leftSection={<LogOut size={14} />} onClick={logoutUser}>
-                        Log out
+                        Sign Out
                     </Menu.Item>
                 </Menu.Dropdown>
             </Menu>
         );
     }
 
-    return (
-        <>
-            <Group>
-                <Button variant="light" onClick={open}>
-                    Sign In
-                </Button>
-                <Button onClick={open}>Sign Up</Button>
-            </Group>
-
-            <Modal
-                opened={opened}
-                onClose={close}
-                title="Authentication"
-                centered
-                overlayProps={{
-                    backgroundOpacity: 0.55,
-                    blur: 3,
-                }}
-            >
-                <Stack py="md">
-                    <Box style={{ display: "flex", justifyContent: "center" }}>
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={() => console.log("Login Failed")}
-                            useOneTap
-                        />
-                    </Box>
-
-                    <Divider label="or" labelPosition="center" my="sm" />
-
-                    <Text size="sm" c="dimmed" ta="center" fs="italic">
-                        Traditional login is currently being upgraded.
-                    </Text>
-
-                    <Button variant="subtle" fullWidth onClick={close}>
-                        Cancel
-                    </Button>
-                </Stack>
-            </Modal>
-        </>
-    );
+    return <GoogleLogin onSuccess={handleGoogleSuccess} text={"signin"} size={"medium"} useOneTap />;
 };

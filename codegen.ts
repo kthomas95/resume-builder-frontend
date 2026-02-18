@@ -3,7 +3,8 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 const config: CodegenConfig = {
     overwrite: true,
     schema: {
-        "http://localhost:8090/graphql": {
+        // "http://localhost:8090/graphql": {
+        "https://resume-api.kthomas.me/graphql": {
             headers: {},
         },
     },

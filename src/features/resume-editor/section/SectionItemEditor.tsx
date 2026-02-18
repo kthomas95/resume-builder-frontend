@@ -8,11 +8,11 @@ import { ResumeContent_SectionItem_Fragment } from "../../../__generated__/graph
 
 interface SectionItemEditorProps {
     item: ResumeContent_SectionItem_Fragment["item"];
-    onUpdate: (updater: SectionItemUpdater) => void;
-    onRemove?: () => void;
 }
 
-export const SectionItemEditor = ({ item, onUpdate, onRemove }: SectionItemEditorProps) => {
+export const SectionItemEditor = ({ item }: SectionItemEditorProps) => {
+    return <div>TODO</div>;
+
     return (
         <Paper withBorder p="md" radius="md">
             <Stack gap="sm">

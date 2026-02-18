@@ -9,9 +9,11 @@ import { GenericSection } from "./section/GenericSection";
 import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
 import { useTitle } from "react-use";
 import { BuildPdfButton } from "./BuildPdfButton";
-import { AddNewSectionButton } from "./AddNewSectionButton";
+import { AddNewSectionButton } from "./section/AddNewSectionButton";
 import { ResumeInfoBar } from "./ResumeInfoBar";
 import { EditSummary } from "./EditSummary";
+import { DivideChildren } from "../common/DivideChildren";
+import { SectionIndexContext } from "./section/section-context";
 
 export const ViewAndEditResume = ({ id }: { id: string }) => {
     const [{ data, fetching, error }] = useGetResumeSubscription({ variables: { resumeId: id } });
@@ -46,7 +48,7 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
 
     return (
         <ResumeContext.Provider value={{ resume, mutate, resumeId: id }}>
-            <Stack gap="xl" style={{ "--font-resume-heading": "Merriweather" }}>
+            <Stack gap="xl" style={{ "--font-resume-heading": "Merriweather Variable" }}>
                 <ResumeInfoBar />
 
                 <Divider />
@@ -60,9 +62,13 @@ export const ViewAndEditResume = ({ id }: { id: string }) => {
                 <Divider label="Sections" labelPosition="center" />
 
                 <Stack gap="lg">
-                    {resume.resumeData.sections.map((section, index) => (
-                        <GenericSection key={index} section={section} index={index} />
-                    ))}
+                    <DivideChildren divider={<Divider my={"xl"} />}>
+                        {resume.resumeData.sections.map((section, index) => (
+                            <SectionIndexContext value={index} key={index}>
+                                <GenericSection {...section} />
+                            </SectionIndexContext>
+                        ))}
+                    </DivideChildren>
                 </Stack>
 
                 <Group justify="center" py="xl">

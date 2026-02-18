@@ -1,7 +1,7 @@
-import { useResume } from "./resume-context";
+import { useResume } from "../resume-context";
 import { Button } from "@mantine/core";
 import { Plus } from "lucide-react";
-import { ResumeUpdater } from "../../types";
+import { ResumeUpdater } from "../../../types";
 import * as React from "react";
 
 export const AddNewSectionButton = () => {
