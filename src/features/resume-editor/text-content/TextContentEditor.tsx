@@ -3,7 +3,6 @@ import { ResumeTextFragment } from "../../../__generated__/graphql";
 import { EditParagraph } from "./EditParagraph";
 import { EditBulletPoints } from "./EditBulletPoints";
 import { EditColumns } from "./EditColumns";
-import { Stack } from "@mantine/core";
 import { TextContentIndexContext } from "./text-content-context";
 
 interface TextContentEditorProps {
@@ -19,8 +18,8 @@ export const TextContentEditor = ({ text, index }: TextContentEditorProps & { in
         </TextContentIndexContext>
     );
 };
-export const RenderTextContent = ({ contentItems }: { contentItems: ResumeTextFragment[] }) => (
-    <Stack gap="md">
-        {contentItems?.map((content, index) => <TextContentEditor key={index} text={content} index={index} />)}
-    </Stack>
-);
+// export const RenderTextContent = ({ contentItems }: { contentItems: ResumeTextFragment[] }) => (
+//     <Stack gap="md">
+//         {contentItems?.map((content, index) => <TextContentEditor key={index} text={content} index={index} />)}
+//     </Stack>
+// );

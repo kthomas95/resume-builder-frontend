@@ -1,6 +1,6 @@
 import { BulletPointsFragment } from "../../../__generated__/graphql";
 import { ActionIcon, Button, Group, NumberInput, Stack } from "@mantine/core";
-import { ContentUpdater, ResumeUpdater, SectionUpdater } from "../../../types";
+import { ResumeTextUpdater } from "../../../types";
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { TextField } from "../../common/TextField";
 import * as React from "react";
@@ -10,11 +10,6 @@ import { SectionIndexContext, useUpdateSection } from "../section/section-contex
 import { TextContentIndexContext, useUpdateTextContent } from "./text-content-context";
 
 export const EditBulletPoints = (text: BulletPointsFragment) => {
-    const textContentIndex = useContext(TextContentIndexContext);
-    const sectionIndex = useContext(SectionIndexContext);
-    const { mutate } = useResume();
-
-    const updateSection = useUpdateSection();
     const updateTextContent = useUpdateTextContent();
 
     const bulletItems = text.bulletItems || [];
@@ -25,13 +20,9 @@ export const EditBulletPoints = (text: BulletPointsFragment) => {
                     label="Columns"
                     value={text.columns}
                     onChange={(val) =>
-                        updateSection({
-                            type: SectionUpdater.Type.UpdateContent,
-                            index: textContentIndex,
-                            updater: {
-                                type: ContentUpdater.Type.UpdateBulletPoints,
-                                columns: Number(val),
-                            },
+                        updateTextContent({
+                            type: ResumeTextUpdater.Type.UpdateBulletPoints,
+                            columns: Number(val),
                         })
                     }
                     min={1}
@@ -51,7 +42,7 @@ export const EditBulletPoints = (text: BulletPointsFragment) => {
                             const newItems = [...bulletItems];
                             newItems[index] = val;
                             updateTextContent({
-                                type: ContentUpdater.Type.UpdateBulletPoints,
+                                type: ResumeTextUpdater.Type.UpdateBulletPoints,
                                 items: newItems,
                             });
                         }}
@@ -61,7 +52,7 @@ export const EditBulletPoints = (text: BulletPointsFragment) => {
                         variant="subtle"
                         onClick={() =>
                             updateTextContent({
-                                type: ContentUpdater.Type.RemoveBulletPoint,
+                                type: ResumeTextUpdater.Type.RemoveBulletPoint,
                                 index,
                             })
                         }
@@ -76,7 +67,7 @@ export const EditBulletPoints = (text: BulletPointsFragment) => {
                 leftSection={<Plus size={14} />}
                 onClick={() =>
                     updateTextContent({
-                        type: ContentUpdater.Type.AddBulletPoint,
+                        type: ResumeTextUpdater.Type.AddBulletPoint,
                         item: "",
                     })
                 }

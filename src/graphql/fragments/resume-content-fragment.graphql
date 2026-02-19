@@ -18,12 +18,6 @@ fragment Paragraph on Paragraph {
     text
 }
 
-fragment SectionItems on SectionItem {
-    item {
-        ...ResumeSectionItem
-    }
-}
-
 fragment ResumeText on ResumeText {
     __typename
 
@@ -37,28 +31,5 @@ fragment ResumeText on ResumeText {
 
     ... on Paragraph {
         ...Paragraph
-    }
-}
-
-fragment ResumeContent on ResumeContent {
-    __typename
-
-    ... on TextContent {
-        text {
-            ...ResumeText
-        }
-    }
-
-    ... on SectionItem {
-        item {
-            rightLabel
-            leftLabel
-            centerLabel
-            contentItems {
-                text {
-                    ...ResumeText
-                }
-            }
-        }
     }
 }

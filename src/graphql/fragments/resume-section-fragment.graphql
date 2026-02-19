@@ -3,13 +3,13 @@ fragment ResumeSectionItem on ResumeSectionItem {
     leftLabel
     rightLabel
     contentItems {
-        ...ResumeContent
+        ...ResumeText
     }
 }
 
 fragment ResumeSection on ResumeSection {
     title
     contentItems {
-        ...ResumeContent
+        ...ResumeSectionItem
     }
 }

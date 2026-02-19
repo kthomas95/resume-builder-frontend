@@ -1,14 +1,12 @@
 import * as React from "react";
-import { Affix, Center, Divider, Group, Loader, rem, Stack, Text, Title } from "@mantine/core";
+import { Center, Divider, Group, Loader, Stack, Text, Title } from "@mantine/core";
 import { useGetResumeSubscription } from "../../__generated__/graphql";
 import { useModifyResume } from "./use-modify-resume";
 import { ResumeContext } from "./resume-context";
 import { ResumeTitleEditor } from "./ResumeTitleEditor";
 import { ContactItemsEditor } from "./ContactItemsEditor";
 import { GenericSection } from "./section/GenericSection";
-import { ResumeSettingsEditor } from "./ResumeSettingsEditor";
 import { useTitle } from "react-use";
-import { BuildPdfButton } from "./BuildPdfButton";
 import { AddNewSectionButton } from "./section/AddNewSectionButton";
 import { ResumeInfoBar } from "./ResumeInfoBar";
 import { EditSummary } from "./EditSummary";

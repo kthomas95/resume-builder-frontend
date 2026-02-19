@@ -1,26 +1,18 @@
-import { useResume } from "../resume-context";
 import { createContext, useCallback, useContext } from "react";
-import { SectionIndexContext } from "../section/section-context";
-import { ContentUpdater, ResumeUpdater, SectionUpdater } from "../../../types";
+import { ResumeTextUpdater, SectionItemUpdater } from "../../../types";
+import { SectionItemIndexContext, useUpdateSectionItem } from "../section/SectionItemEditor";
 
-export const TextContentIndexContext = createContext(-1);
+export const TextContentIndexContext = createContext<number>(-1);
 
 export const useUpdateTextContent = () => {
-    const { mutate } = useResume();
-    const sectionIndex = useContext(SectionIndexContext);
-    const textIndex = useContext(TextContentIndexContext);
+    const updateSectionItem = useUpdateSectionItem();
+    const resumeTextIndex = useContext(TextContentIndexContext);
 
-    return useCallback(
-        (updater: ContentUpdater) =>
-            mutate({
-                type: ResumeUpdater.Type.UpdateSection,
-                index: sectionIndex,
-                updater: {
-                    type: SectionUpdater.Type.UpdateContent,
-                    index: textIndex,
-                    updater,
-                },
-            }),
-        [mutate, sectionIndex, textIndex],
-    );
+    return useCallback((updater: ResumeTextUpdater) => {
+        updateSectionItem({
+            type: SectionItemUpdater.Type.UpdateText,
+            updater,
+            index: resumeTextIndex,
+        });
+    }, []);
 };

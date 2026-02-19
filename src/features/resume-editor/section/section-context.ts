@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext } from "react";
 import { useResume } from "../resume-context";
-import { ResumeUpdater, SectionUpdater } from "../../../types";
+import { ModifySections, ResumeUpdater, SectionUpdater } from "../../../types";
 
 export const SectionIndexContext = createContext(-1);
 
@@ -10,9 +10,12 @@ export const useUpdateSection = () => {
     return useCallback(
         (updater: SectionUpdater) =>
             mutate({
-                type: ResumeUpdater.Type.UpdateSection,
-                index: sectionIndex,
-                updater,
+                type: ResumeUpdater.Type.UpdateSections,
+                updater: {
+                    index: sectionIndex,
+                    type: ModifySections.Type.UpdateSection,
+                    updater,
+                },
             }),
         [sectionIndex, mutate],
     );

@@ -1,153 +1,111 @@
 import * as React from "react";
-import { Stack, Group, Divider, Paper, ActionIcon, Button, Menu } from "@mantine/core";
-import { Trash2, Plus } from "lucide-react";
+import { Button, Divider, Group, Menu, Paper, Stack } from "@mantine/core";
+import { Plus } from "lucide-react";
 import { TextContentEditor } from "../text-content/TextContentEditor";
-import { TextField } from "../../common/TextField";
-import { ResumeContent, ResumeText, SectionItemUpdater } from "../../../types";
-import { ResumeContent_SectionItem_Fragment } from "../../../__generated__/graphql";
+import { ResumeText, SectionItemUpdater, SectionUpdater } from "../../../types";
+import { SectionIndexContext, useUpdateSection } from "./section-context";
+import { useResume } from "../resume-context";
+import { ResumeSectionItemFragment } from "../../../__generated__/graphql";
+import { ModifyLabelsComponent } from "./ModifyLabelsComponent";
+import { createContext, useCallback, useContext } from "react";
+import { DivideChildren } from "../../common/DivideChildren";
 
 interface SectionItemEditorProps {
-    item: ResumeContent_SectionItem_Fragment["item"];
+    item: ResumeSectionItemFragment;
 }
 
+export const useUpdateSectionItem = () => {
+    const updateSection = useUpdateSection();
+    const sectionItemIndex = useContext(SectionItemIndexContext);
+
+    return useCallback(
+        (updater: SectionItemUpdater) => {
+            updateSection({
+                type: SectionUpdater.Type.UpdateContent,
+                index: sectionItemIndex,
+                updater,
+            });
+        },
+        [updateSection, sectionItemIndex],
+    );
+};
+
+export const SectionItemIndexContext = createContext(0);
+
 export const SectionItemEditor = ({ item }: SectionItemEditorProps) => {
-    return <div>TODO</div>;
+    const updateSection = useUpdateSection();
+    const resumeSectionIndex = useContext(SectionIndexContext);
+    const resumeSectionItemIndex = useContext(SectionItemIndexContext);
+    const { mutate } = useResume();
+    const updateSectionItem = useUpdateSectionItem();
+
+    const addItem = (item: ResumeText) => {
+        updateSectionItem({
+            type: SectionItemUpdater.Type.AddContent,
+            content: item,
+        });
+    };
 
     return (
-        <Paper withBorder p="md" radius="md">
-            <Stack gap="sm">
-                <Group grow>
-                    <TextField
-                        label="Left Label"
-                        placeholder="e.g., University Name"
-                        initialValue={item.leftLabel || ""}
-                        commitChange={(val) =>
-                            onUpdate({
-                                type: SectionItemUpdater.Type.UpdateLabels,
-                                leftLabel: val,
-                            })
-                        }
-                    />
-                    <TextField
-                        label="Center Label"
-                        placeholder="e.g., Location"
-                        initialValue={item.centerLabel || ""}
-                        commitChange={(val) =>
-                            onUpdate({
-                                type: SectionItemUpdater.Type.UpdateLabels,
-                                centerLabel: val,
-                            })
-                        }
-                    />
-                    <Group align="flex-end">
-                        <TextField
-                            label="Right Label"
-                            placeholder="e.g., Dates"
-                            initialValue={item.rightLabel || ""}
-                            commitChange={(val) =>
-                                onUpdate({
-                                    type: SectionItemUpdater.Type.UpdateLabels,
-                                    rightLabel: val,
-                                })
-                            }
-                            style={{ flex: 1 }}
-                        />
-                        {onRemove && (
-                            <ActionIcon color="red" variant="subtle" size="lg" onClick={onRemove}>
-                                <Trash2 size={20} />
-                            </ActionIcon>
-                        )}
-                    </Group>
-                </Group>
+        <Stack gap="sm">
+            <ModifyLabelsComponent item={item} />
 
-                <Divider variant="dashed" />
-
-                <Stack gap="md">
+            <Stack gap="md">
+                <DivideChildren divider={<Divider />}>
                     {item.contentItems?.map((content, index: number) => (
-                        <TextContentEditor
-                            key={index}
-                            text={content.text}
-                            onUpdate={(updater) =>
-                                onUpdate({
-                                    type: SectionItemUpdater.Type.UpdateContent,
-                                    index,
-                                    updater,
+                        <TextContentEditor text={content} index={index} />
+                    ))}
+                </DivideChildren>
+            </Stack>
+
+            <Group justify="center" mt="xs">
+                <Menu shadow="md" width={200} position="bottom-start">
+                    <Menu.Target>
+                        <Button variant="subtle" size="xs" leftSection={<Plus size={14} />}>
+                            Add Content
+                        </Button>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                        <Menu.Item
+                            leftSection={<Plus size={14} />}
+                            onClick={() =>
+                                addItem({
+                                    type: ResumeText.Type.Paragraph,
+                                    text: "",
                                 })
                             }
-                        />
-                    ))}
-                </Stack>
+                        >
+                            Add Paragraph
+                        </Menu.Item>
 
-                <Group justify="center" mt="xs">
-                    <Menu shadow="md" width={200} position="bottom-start">
-                        <Menu.Target>
-                            <Button variant="subtle" size="xs" leftSection={<Plus size={14} />}>
-                                Add Content
-                            </Button>
-                        </Menu.Target>
+                        <Menu.Item
+                            leftSection={<Plus size={14} />}
+                            onClick={() =>
+                                addItem({
+                                    type: ResumeText.Type.BulletPoints,
+                                    items: [""],
+                                    columns: 1,
+                                })
+                            }
+                        >
+                            Add Bullets
+                        </Menu.Item>
 
-                        <Menu.Dropdown>
-                            <Menu.Item
-                                leftSection={<Plus size={14} />}
-                                onClick={() =>
-                                    onUpdate({
-                                        type: SectionItemUpdater.Type.AddContent,
-                                        content: {
-                                            type: ResumeContent.Type.TextContent,
-                                            text: {
-                                                type: ResumeText.Type.Paragraph,
-                                                text: "",
-                                            },
-                                        },
-                                    })
-                                }
-                            >
-                                Add Paragraph
-                            </Menu.Item>
-
-                            <Menu.Item
-                                leftSection={<Plus size={14} />}
-                                onClick={() =>
-                                    onUpdate({
-                                        type: SectionItemUpdater.Type.AddContent,
-                                        content: {
-                                            type: ResumeContent.Type.TextContent,
-                                            text: {
-                                                type: ResumeText.Type.BulletPoints,
-                                                items: [""],
-                                                columns: 1,
-                                            },
-                                        },
-                                    })
-                                }
-                            >
-                                Add Bullets
-                            </Menu.Item>
-
-                            <Menu.Item
-                                leftSection={<Plus size={14} />}
-                                onClick={() =>
-                                    onUpdate({
-                                        type: SectionItemUpdater.Type.AddContent,
-                                        content: {
-                                            type: ResumeContent.Type.TextContent,
-                                            text: {
-                                                type: ResumeText.Type.Columns,
-                                                items: [
-                                                    { label: "Column 1", items: [""] },
-                                                    { label: "Column 2", items: [""] },
-                                                ],
-                                            },
-                                        },
-                                    })
-                                }
-                            >
-                                Add Columns
-                            </Menu.Item>
-                        </Menu.Dropdown>
-                    </Menu>
-                </Group>
-            </Stack>
-        </Paper>
+                        <Menu.Item
+                            leftSection={<Plus size={14} />}
+                            onClick={() =>
+                                addItem({
+                                    type: ResumeText.Type.Columns,
+                                    items: [],
+                                })
+                            }
+                        >
+                            Add Columns
+                        </Menu.Item>
+                    </Menu.Dropdown>
+                </Menu>
+            </Group>
+        </Stack>
     );
 };

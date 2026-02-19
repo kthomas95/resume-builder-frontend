@@ -2,9 +2,9 @@ import * as React from "react";
 import { useContext } from "react";
 import { ActionIcon, Button, Divider, Group, Menu, Stack, TextInput } from "@mantine/core";
 import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
-import { SectionItemEditor } from "./SectionItemEditor";
+import { SectionItemEditor, SectionItemIndexContext } from "./SectionItemEditor";
 import { TextContentEditor } from "../text-content/TextContentEditor";
-import { ResumeContent, ResumeText, ResumeUpdater, SectionUpdater } from "../../../types";
+import { ModifySections, ResumeText, ResumeUpdater, SectionUpdater } from "../../../types";
 import { ResumeSectionFragment } from "../../../__generated__/graphql";
 import { useResume } from "../resume-context";
 import { DivideChildren } from "../../common/DivideChildren";
@@ -16,22 +16,34 @@ export const GenericSection = (section: ResumeSectionFragment) => {
     const index = useContext(SectionIndexContext);
     const { mutate } = useResume();
 
-    const onUpdate = (updater: SectionUpdater) =>
+    const modifySections = (updater: ModifySections) =>
         mutate({
-            type: ResumeUpdater.Type.UpdateSection,
-            index,
+            type: ResumeUpdater.Type.UpdateSections,
             updater,
         });
 
-    const onRemove = () =>
-        mutate({
-            type: ResumeUpdater.Type.RemoveSection,
+    const modifySection = (updater: SectionUpdater) =>
+        modifySections({
+            type: ModifySections.Type.UpdateSection,
+            updater,
             index,
         });
 
     const { inputProps } = useTextFieldValue(title, 1000, (newTitle) => {
-        onUpdate({ type: SectionUpdater.Type.UpdateTitle, newTitle });
+        modifySection({ type: SectionUpdater.Type.UpdateTitle, newTitle });
     });
+
+    const addContent = (content: ResumeText) => {
+        modifySection({
+            type: SectionUpdater.Type.AddContent,
+            content: {
+                contentItems: [content],
+                leftLabel: null,
+                centerLabel: null,
+                rightLabel: null,
+            },
+        });
+    };
 
     return (
         <Stack gap="md">
@@ -56,7 +68,13 @@ export const GenericSection = (section: ResumeSectionFragment) => {
                             </ActionIcon>
                         </Menu.Target>
                         <Menu.Dropdown>
-                            <Menu.Item color="red" leftSection={<Trash2 size={14} />} onClick={onRemove}>
+                            <Menu.Item
+                                color="red"
+                                leftSection={<Trash2 size={14} />}
+                                onClick={() => {
+                                    modifySections({ type: ModifySections.Type.RemoveSection, index });
+                                }}
+                            >
                                 Remove Section
                             </Menu.Item>
                         </Menu.Dropdown>
@@ -67,14 +85,11 @@ export const GenericSection = (section: ResumeSectionFragment) => {
             <Stack gap="lg">
                 <DivideChildren divider={<Divider />}>
                     {contentItems.map((content, index) => {
-                        if (content.__typename === "SectionItem") {
-                            return <SectionItemEditor key={index} item={content.item} />;
-                        }
-                        if (content.__typename === "TextContent") {
-                            return <TextContentEditor index={index} key={index} text={content.text} />;
-                        }
-
-                        return null;
+                        return (
+                            <SectionItemIndexContext value={index}>
+                                <SectionItemEditor key={index} item={content} />
+                            </SectionItemIndexContext>
+                        );
                     })}
                 </DivideChildren>
             </Stack>
@@ -83,7 +98,7 @@ export const GenericSection = (section: ResumeSectionFragment) => {
                 <Menu shadow="md" width={200} position="bottom-start">
                     <Menu.Target>
                         <Button variant="light" size="sm" leftSection={<Plus size={14} />}>
-                            Add Item
+                            Add Block
                         </Button>
                     </Menu.Target>
 
@@ -92,24 +107,13 @@ export const GenericSection = (section: ResumeSectionFragment) => {
                         <Menu.Item
                             leftSection={<Plus size={14} />}
                             onClick={() =>
-                                onUpdate({
+                                modifySection({
                                     type: SectionUpdater.Type.AddContent,
                                     content: {
-                                        type: ResumeContent.Type.SectionItem,
-                                        item: {
-                                            leftLabel: "New Item",
-                                            centerLabel: "",
-                                            rightLabel: "",
-                                            contentItems: [
-                                                {
-                                                    text: {
-                                                        type: ResumeText.Type.BulletPoints,
-                                                        items: [""],
-                                                        columns: 1,
-                                                    },
-                                                },
-                                            ],
-                                        },
+                                        contentItems: [],
+                                        leftLabel: "",
+                                        centerLabel: "",
+                                        rightLabel: "",
                                     },
                                 })
                             }
@@ -122,18 +126,7 @@ export const GenericSection = (section: ResumeSectionFragment) => {
 
                         <Menu.Item
                             leftSection={<Plus size={14} />}
-                            onClick={() =>
-                                onUpdate({
-                                    type: SectionUpdater.Type.AddContent,
-                                    content: {
-                                        type: ResumeContent.Type.TextContent,
-                                        text: {
-                                            type: ResumeText.Type.Paragraph,
-                                            text: "",
-                                        },
-                                    },
-                                })
-                            }
+                            onClick={() => addContent({ type: ResumeText.Type.Paragraph, text: "" })}
                         >
                             Add Paragraph
                         </Menu.Item>
@@ -141,16 +134,10 @@ export const GenericSection = (section: ResumeSectionFragment) => {
                         <Menu.Item
                             leftSection={<Plus size={14} />}
                             onClick={() =>
-                                onUpdate({
-                                    type: SectionUpdater.Type.AddContent,
-                                    content: {
-                                        type: ResumeContent.Type.TextContent,
-                                        text: {
-                                            type: ResumeText.Type.BulletPoints,
-                                            items: [""],
-                                            columns: 1,
-                                        },
-                                    },
+                                addContent({
+                                    type: ResumeText.Type.BulletPoints,
+                                    columns: 1,
+                                    items: [],
                                 })
                             }
                         >
@@ -159,21 +146,7 @@ export const GenericSection = (section: ResumeSectionFragment) => {
 
                         <Menu.Item
                             leftSection={<Plus size={14} />}
-                            onClick={() =>
-                                onUpdate({
-                                    type: SectionUpdater.Type.AddContent,
-                                    content: {
-                                        type: ResumeContent.Type.TextContent,
-                                        text: {
-                                            type: ResumeText.Type.Columns,
-                                            items: [
-                                                { label: "Column 1", items: [""] },
-                                                { label: "Column 2", items: [""] },
-                                            ],
-                                        },
-                                    },
-                                })
-                            }
+                            onClick={() => addContent({ type: ResumeText.Type.Columns, items: [] })}
                         >
                             Add Columns
                         </Menu.Item>

@@ -1,11 +1,11 @@
 import { ColumnsFragment } from "../../../__generated__/graphql";
 import { Group, Stack } from "@mantine/core";
 import { TextField } from "../../common/TextField";
-import { ContentUpdater } from "../../../types";
 import * as React from "react";
 import { useContext } from "react";
 
 import { useUpdateTextContent } from "./text-content-context";
+import { ResumeTextUpdater } from "../../../types";
 
 export const EditColumns = (props: ColumnsFragment) => {
     const onUpdate = useUpdateTextContent();
@@ -21,7 +21,7 @@ export const EditColumns = (props: ColumnsFragment) => {
                             const newColumns = [...columnItems];
                             newColumns[colIndex] = { ...col, label: val };
                             onUpdate({
-                                type: ContentUpdater.Type.UpdateColumns,
+                                type: ResumeTextUpdater.Type.UpdateColumns,
                                 items: newColumns,
                             });
                         }}
@@ -36,7 +36,7 @@ export const EditColumns = (props: ColumnsFragment) => {
                                 const newColumns = [...columnItems];
                                 newColumns[colIndex] = { ...col, items: newItems };
                                 onUpdate({
-                                    type: ContentUpdater.Type.UpdateColumns,
+                                    type: ResumeTextUpdater.Type.UpdateColumns,
                                     items: newColumns,
                                 });
                             }}

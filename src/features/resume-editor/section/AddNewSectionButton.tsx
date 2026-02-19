@@ -1,7 +1,7 @@
 import { useResume } from "../resume-context";
 import { Button } from "@mantine/core";
 import { Plus } from "lucide-react";
-import { ResumeUpdater } from "../../../types";
+import { ModifySections, ResumeUpdater } from "../../../types";
 import * as React from "react";
 
 export const AddNewSectionButton = () => {
@@ -14,10 +14,13 @@ export const AddNewSectionButton = () => {
             leftSection={<Plus size={20} />}
             onClick={() =>
                 mutate({
-                    type: ResumeUpdater.Type.AddSection,
-                    section: {
-                        title: "New Section",
-                        contentItems: [],
+                    type: ResumeUpdater.Type.UpdateSections,
+                    updater: {
+                        type: ModifySections.Type.AddSection,
+                        section: {
+                            title: "New Section",
+                            contentItems: [],
+                        },
                     },
                 })
             }

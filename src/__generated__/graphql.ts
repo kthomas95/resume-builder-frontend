@@ -8,6 +8,22 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export const ResumeTitleFragmentDoc = gql`
+    fragment ResumeTitle on ResumeTitle {
+  name
+}
+    `;
+export const ResumeSummaryFragmentDoc = gql`
+    fragment ResumeSummary on ResumeSummary {
+  text
+}
+    `;
+export const ContactItemFragmentDoc = gql`
+    fragment ContactItem on ResumeContactItem {
+  value
+  icon
+}
+    `;
 export const BulletPointsFragmentDoc = gql`
     fragment BulletPoints on BulletPoints {
   columns
@@ -48,69 +64,24 @@ export const ResumeTextFragmentDoc = gql`
     ${BulletPointsFragmentDoc}
 ${ColumnsFragmentDoc}
 ${ParagraphFragmentDoc}`;
-export const ResumeContentFragmentDoc = gql`
-    fragment ResumeContent on ResumeContent {
-  __typename
-  ... on TextContent {
-    text {
-      ...ResumeText
-    }
-  }
-  ... on SectionItem {
-    item {
-      rightLabel
-      leftLabel
-      centerLabel
-      contentItems {
-        text {
-          ...ResumeText
-        }
-      }
-    }
-  }
-}
-    ${ResumeTextFragmentDoc}`;
 export const ResumeSectionItemFragmentDoc = gql`
     fragment ResumeSectionItem on ResumeSectionItem {
   centerLabel
   leftLabel
   rightLabel
   contentItems {
-    ...ResumeContent
+    ...ResumeText
   }
 }
-    ${ResumeContentFragmentDoc}`;
-export const SectionItemsFragmentDoc = gql`
-    fragment SectionItems on SectionItem {
-  item {
-    ...ResumeSectionItem
-  }
-}
-    ${ResumeSectionItemFragmentDoc}`;
-export const ResumeTitleFragmentDoc = gql`
-    fragment ResumeTitle on ResumeTitle {
-  name
-}
-    `;
-export const ResumeSummaryFragmentDoc = gql`
-    fragment ResumeSummary on ResumeSummary {
-  text
-}
-    `;
-export const ContactItemFragmentDoc = gql`
-    fragment ContactItem on ResumeContactItem {
-  value
-  icon
-}
-    `;
+    ${ResumeTextFragmentDoc}`;
 export const ResumeSectionFragmentDoc = gql`
     fragment ResumeSection on ResumeSection {
   title
   contentItems {
-    ...ResumeContent
+    ...ResumeSectionItem
   }
 }
-    ${ResumeContentFragmentDoc}`;
+    ${ResumeSectionItemFragmentDoc}`;
 export const ResumeSettingsFragmentDoc = gql`
     fragment ResumeSettings on ResumeSettings {
   baseFontSize
@@ -266,8 +237,6 @@ export type ColumnsFragment = { columnItems: Array<ColumnItemFragment> };
 
 export type ParagraphFragment = { text: string };
 
-export type SectionItemsFragment = { item: ResumeSectionItemFragment };
-
 export type ResumeText_BulletPoints_Fragment = (
   { __typename: 'BulletPoints' }
   & BulletPointsFragment
@@ -285,17 +254,11 @@ export type ResumeText_Paragraph_Fragment = (
 
 export type ResumeTextFragment = ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment;
 
-export type ResumeContent_SectionItem_Fragment = { __typename: 'SectionItem', item: { rightLabel?: string | null, leftLabel?: string | null, centerLabel?: string | null, contentItems: Array<{ text: ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment }> } };
-
-export type ResumeContent_TextContent_Fragment = { __typename: 'TextContent', text: ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment };
-
-export type ResumeContentFragment = ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment;
-
 export type ResumeFragment = { description: string, id: string, lastModifiedSeconds: string, title: string, resumeData: { title: ResumeTitleFragment, summary: ResumeSummaryFragment, contactItems: Array<ContactItemFragment>, sections: Array<ResumeSectionFragment>, settings: ResumeSettingsFragment } };
 
-export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel?: string | null, rightLabel?: string | null, contentItems: Array<ResumeContent_TextContent_Fragment> };
+export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel?: string | null, rightLabel?: string | null, contentItems: Array<ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment> };
 
-export type ResumeSectionFragment = { title: string, contentItems: Array<ResumeContent_SectionItem_Fragment | ResumeContent_TextContent_Fragment> };
+export type ResumeSectionFragment = { title: string, contentItems: Array<ResumeSectionItemFragment> };
 
 export type ResumeSettingsFragment = { baseFontSize: number };
 
@@ -474,8 +437,6 @@ export interface ResumeContactItem {
   value: Scalars['String']['output'];
 }
 
-export type ResumeContent = SectionItem | TextContent;
-
 export interface ResumeData {
   contactItems: Array<ResumeContactItem>;
   sections: Array<ResumeSection>;
@@ -485,13 +446,13 @@ export interface ResumeData {
 }
 
 export interface ResumeSection {
-  contentItems: Array<ResumeContent>;
+  contentItems: Array<ResumeSectionItem>;
   title: Scalars['String']['output'];
 }
 
 export interface ResumeSectionItem {
   centerLabel?: Maybe<Scalars['String']['output']>;
-  contentItems: Array<TextContent>;
+  contentItems: Array<ResumeText>;
   leftLabel?: Maybe<Scalars['String']['output']>;
   rightLabel?: Maybe<Scalars['String']['output']>;
 }
@@ -510,10 +471,6 @@ export interface ResumeTitle {
   name: Scalars['String']['output'];
 }
 
-export interface SectionItem {
-  item: ResumeSectionItem;
-}
-
 export interface Subscription {
   subscribeToResume?: Maybe<Resume>;
   viewAvailableResumes: Array<AvailableResume>;
@@ -522,8 +479,4 @@ export interface Subscription {
 
 export interface SubscriptionSubscribeToResumeArgs {
   resumeId: Scalars['String']['input'];
-}
-
-export interface TextContent {
-  text: ResumeText;
 }

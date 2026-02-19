@@ -1,11 +1,11 @@
 import * as React from "react";
 import { ActionIcon, Button, Group, Menu, Stack, TextInput } from "@mantine/core";
 import { ArrowLeft, ArrowRight, Github, Globe, Linkedin, Mail, Phone, Plus, Trash2 } from "lucide-react";
-import { ResumeContactIcon, ResumeUpdater } from "../../types";
+import { ModifyContactItems, ResumeContactIcon, ResumeUpdater } from "../../types";
 import { useTextFieldValue } from "../common/TextField";
 import { useResume } from "./resume-context";
 import { ContactItemFragment } from "../../__generated__/graphql";
-import Type = ResumeUpdater.Type;
+import { useCallback } from "react";
 
 interface ContactItemsEditorProps {
     items: any[];
@@ -30,16 +30,29 @@ const IconMap: Record<ResumeContactIcon, React.ReactNode> = {
     [ResumeContactIcon.LinkedIn]: <Linkedin size={16} />,
 };
 
+const useModifyContactItems = () => {
+    const { mutate } = useResume();
+
+    return useCallback(
+        (updater: ModifyContactItems) =>
+            mutate({
+                type: ResumeUpdater.Type.UpdateContactIcons,
+                updater,
+            }),
+        [],
+    );
+};
+
 const ContactItemEditor = ({
     index,
     isLastItem,
     ...item
 }: ContactItemFragment & { index: number; isLastItem: boolean }) => {
-    const { mutate } = useResume();
+    const modifyContactItems = useModifyContactItems();
 
     const { inputProps } = useTextFieldValue(item.value, 1000, (newValue) => {
-        mutate({
-            type: Type.UpdateContactItem,
+        modifyContactItems({
+            type: ModifyContactItems.Type.UpdateContactItem,
             index,
             item: {
                 icon: item.icon,
@@ -78,7 +91,11 @@ const ContactItemEditor = ({
                 <Menu.Divider />
                 <Menu.Item
                     onClick={() => {
-                        mutate({ type: Type.MoveContactItem, oldIndex: index, newIndex: index - 1 });
+                        modifyContactItems({
+                            type: ModifyContactItems.Type.MoveContactItem,
+                            oldIndex: index,
+                            newIndex: index - 1,
+                        });
                     }}
                     disabled={index === 0}
                     leftSection={<ArrowLeft size={16} />}
@@ -87,7 +104,11 @@ const ContactItemEditor = ({
                 </Menu.Item>
                 <Menu.Item
                     onClick={() => {
-                        mutate({ type: Type.MoveContactItem, oldIndex: index, newIndex: index + 1 });
+                        modifyContactItems({
+                            type: ModifyContactItems.Type.MoveContactItem,
+                            oldIndex: index,
+                            newIndex: index + 1,
+                        });
                     }}
                     disabled={isLastItem}
                     rightSection={<ArrowRight size={16} />}
@@ -98,8 +119,8 @@ const ContactItemEditor = ({
                 {Object.values(ResumeContactIcon).map((icon) => (
                     <Menu.Item
                         onClick={() =>
-                            mutate({
-                                type: ResumeUpdater.Type.UpdateContactItem,
+                            modifyContactItems({
+                                type: ModifyContactItems.Type.UpdateContactItem,
                                 index,
                                 item: {
                                     value: item.value,
@@ -115,8 +136,8 @@ const ContactItemEditor = ({
                 <Menu.Divider />
                 <Menu.Item
                     onClick={() =>
-                        mutate({
-                            type: ResumeUpdater.Type.RemoveContactItem,
+                        modifyContactItems({
+                            type: ModifyContactItems.Type.RemoveContactItem,
                             index,
                         })
                     }
@@ -133,6 +154,7 @@ const ContactItemEditor = ({
 export const ContactItemsEditor = () => {
     const { resume, mutate } = useResume();
     const items = resume.resumeData.contactItems;
+    const modifyContactItems = useModifyContactItems();
 
     return (
         <Stack>
@@ -146,8 +168,8 @@ export const ContactItemsEditor = () => {
                 size="xs"
                 color={"gray"}
                 onClick={() =>
-                    mutate({
-                        type: ResumeUpdater.Type.AddContactItem,
+                    modifyContactItems({
+                        type: ModifyContactItems.Type.AddContactItem,
                         item: {
                             icon: ResumeContactIcon.Email,
                             value: "",
