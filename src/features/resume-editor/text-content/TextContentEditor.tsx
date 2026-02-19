@@ -4,6 +4,8 @@ import { EditParagraph } from "./EditParagraph";
 import { EditBulletPoints } from "./EditBulletPoints";
 import { EditColumns } from "./EditColumns";
 import { TextContentIndexContext } from "./text-content-context";
+import { ActionIcon, Box, Button, Grid, Group, SimpleGrid } from "@mantine/core";
+import { Trash2Icon } from "lucide-react";
 
 interface TextContentEditorProps {
     text: ResumeTextFragment;
