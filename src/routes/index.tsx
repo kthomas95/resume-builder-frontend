@@ -18,7 +18,6 @@ function HomeComponent() {
     const hello = useHelloQueryQuery();
     useTitle("Your Resumes");
 
-    if (hello[0].data) return <div>{JSON.stringify(hello[0].data)}</div>
 
     if (!user) {
         return (
