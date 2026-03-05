@@ -2,6 +2,12 @@ mutation LoginWithGoogle($token: String!) {
     loginWithGoogle(token: $token) {
         message
         success
+        user {
+            email
+            name
+            photoUrl
+            userId
+        }
     }
 }
 

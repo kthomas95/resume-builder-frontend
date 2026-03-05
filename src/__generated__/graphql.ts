@@ -174,6 +174,12 @@ export const LoginWithGoogleDocument = gql`
   loginWithGoogle(token: $token) {
     message
     success
+    user {
+      email
+      name
+      photoUrl
+      userId
+    }
   }
 }
     `;
@@ -252,11 +258,19 @@ export type ResumeText_Paragraph_Fragment = (
   & ParagraphFragment
 );
 
-export type ResumeTextFragment = ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment;
+export type ResumeTextFragment =
+  | ResumeText_BulletPoints_Fragment
+  | ResumeText_Columns_Fragment
+  | ResumeText_Paragraph_Fragment
+;
 
 export type ResumeFragment = { description: string, id: string, lastModifiedSeconds: string, title: string, resumeData: { title: ResumeTitleFragment, summary: ResumeSummaryFragment, contactItems: Array<ContactItemFragment>, sections: Array<ResumeSectionFragment>, settings: ResumeSettingsFragment } };
 
-export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel?: string | null, rightLabel?: string | null, contentItems: Array<ResumeText_BulletPoints_Fragment | ResumeText_Columns_Fragment | ResumeText_Paragraph_Fragment> };
+export type ResumeSectionItemFragment = { centerLabel?: string | null, leftLabel?: string | null, rightLabel?: string | null, contentItems: Array<
+    | ResumeText_BulletPoints_Fragment
+    | ResumeText_Columns_Fragment
+    | ResumeText_Paragraph_Fragment
+  > };
 
 export type ResumeSectionFragment = { title: string, contentItems: Array<ResumeSectionItemFragment> };
 
@@ -290,7 +304,7 @@ export type LoginWithGoogleMutationVariables = Exact<{
 }>;
 
 
-export type LoginWithGoogleMutation = { loginWithGoogle: { message?: string | null, success: boolean } };
+export type LoginWithGoogleMutation = { loginWithGoogle: { message?: string | null, success: boolean, user?: { email: string, name: string, photoUrl?: string | null, userId: number } | null } };
 
 export type LogoutWithGoogleMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -333,6 +347,7 @@ export interface Scalars {
 export interface AuthResponse {
   message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
+  user?: Maybe<HelloResponse>;
 }
 
 export interface AvailableResume {

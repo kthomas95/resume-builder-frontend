@@ -18,6 +18,8 @@ function HomeComponent() {
     const hello = useHelloQueryQuery();
     useTitle("Your Resumes");
 
+    if (hello[0].data) return <div>{JSON.stringify(hello[0].data)}</div>
+
     if (!user) {
         return (
             <Container size="md">
@@ -40,6 +42,7 @@ function HomeComponent() {
                             Create professional, job-winning resumes in minutes.
                         </Text>
                     </Box>
+                    {JSON.stringify(hello[0].data)}
 
                     <Group gap="md">
                         <Button size="xl" radius="md" leftSection={<Rocket size={20} />}>

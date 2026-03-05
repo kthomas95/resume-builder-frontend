@@ -1,4 +1,4 @@
-import { atomWithStorage } from "jotai/utils";
+import {atom} from "jotai";
 
 export interface UserAtomValue {
     username: string;
@@ -7,4 +7,4 @@ export interface UserAtomValue {
     name?: string | null;
 }
 
-export const UserAtom = atomWithStorage<UserAtomValue | null>("user", null);
+export const UserAtom = atom<UserAtomValue | null>(null);

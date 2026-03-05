@@ -9,7 +9,7 @@ const wsClient = createWSClient({
     keepAlive: 1_000,
 });
 
-const graphQlClient = new Client({
+export const graphQlClient = new Client({
     url: import.meta.env.VITE_GQL_URL ?? "https://resume-api.kthomas.me/graphql",
     fetchOptions: {
         credentials: "include",

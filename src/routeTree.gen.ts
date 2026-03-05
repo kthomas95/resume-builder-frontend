@@ -8,82 +8,43 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthcallbackRouteImport } from './routes/authcallback'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResumeIdEditRouteImport } from './routes/$resumeId.edit'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as AuthcallbackImport } from './routes/authcallback'
-import { Route as IndexImport } from './routes/index'
-import { Route as ResumeIdEditImport } from './routes/$resumeId.edit'
-
-// Create/Update Routes
-
-const AuthcallbackRoute = AuthcallbackImport.update({
+const AuthcallbackRoute = AuthcallbackRouteImport.update({
   id: '/authcallback',
   path: '/authcallback',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ResumeIdEditRoute = ResumeIdEditImport.update({
+const ResumeIdEditRoute = ResumeIdEditRouteImport.update({
   id: '/$resumeId/edit',
   path: '/$resumeId/edit',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/authcallback': {
-      id: '/authcallback'
-      path: '/authcallback'
-      fullPath: '/authcallback'
-      preLoaderRoute: typeof AuthcallbackImport
-      parentRoute: typeof rootRoute
-    }
-    '/$resumeId/edit': {
-      id: '/$resumeId/edit'
-      path: '/$resumeId/edit'
-      fullPath: '/$resumeId/edit'
-      preLoaderRoute: typeof ResumeIdEditImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/authcallback': typeof AuthcallbackRoute
   '/$resumeId/edit': typeof ResumeIdEditRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/authcallback': typeof AuthcallbackRoute
   '/$resumeId/edit': typeof ResumeIdEditRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/authcallback': typeof AuthcallbackRoute
   '/$resumeId/edit': typeof ResumeIdEditRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/authcallback' | '/$resumeId/edit'
@@ -92,11 +53,36 @@ export interface FileRouteTypes {
   id: '__root__' | '/' | '/authcallback' | '/$resumeId/edit'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthcallbackRoute: typeof AuthcallbackRoute
   ResumeIdEditRoute: typeof ResumeIdEditRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/authcallback': {
+      id: '/authcallback'
+      path: '/authcallback'
+      fullPath: '/authcallback'
+      preLoaderRoute: typeof AuthcallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$resumeId/edit': {
+      id: '/$resumeId/edit'
+      path: '/$resumeId/edit'
+      fullPath: '/$resumeId/edit'
+      preLoaderRoute: typeof ResumeIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -104,31 +90,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthcallbackRoute: AuthcallbackRoute,
   ResumeIdEditRoute: ResumeIdEditRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/authcallback",
-        "/$resumeId/edit"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/authcallback": {
-      "filePath": "authcallback.tsx"
-    },
-    "/$resumeId/edit": {
-      "filePath": "$resumeId.edit.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
