@@ -21,6 +21,8 @@ export const UserManagement = () => {
 
     const [{data, fetching: fetchingMe}, refetchMe] = useHelloQueryQuery();
 
+    const shouldTryAndGoogleLogin = data && !data.me && !fetchingMe && !currentUser;
+
     useEffect(() => {
         console.log("useEffect", data);
         if (data) {
@@ -107,7 +109,7 @@ export const UserManagement = () => {
         );
     }
 
-    if (data && !fetchingMe) {
-        return <GoogleLogin onSuccess={handleGoogleSuccess} text={"signin"} size={"medium"} useOneTap/>;
+    if (shouldTryAndGoogleLogin) {
+        return <GoogleLogin onSuccess={handleGoogleSuccess} text={"signin"} size={"medium"}  useOneTap={shouldTryAndGoogleLogin}/>;
     }
 };
