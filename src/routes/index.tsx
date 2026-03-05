@@ -41,7 +41,6 @@ function HomeComponent() {
                             Create professional, job-winning resumes in minutes.
                         </Text>
                     </Box>
-                    {JSON.stringify(hello[0].data)}
 
                     <Group gap="md">
                         <Button size="xl" radius="md" leftSection={<Rocket size={20} />}>

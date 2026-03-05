@@ -107,5 +107,7 @@ export const UserManagement = () => {
         );
     }
 
-    return <GoogleLogin onSuccess={handleGoogleSuccess} text={"signin"} size={"medium"} useOneTap/>;
+    if (data && !fetchingMe) {
+        return <GoogleLogin onSuccess={handleGoogleSuccess} text={"signin"} size={"medium"} useOneTap/>;
+    }
 };
